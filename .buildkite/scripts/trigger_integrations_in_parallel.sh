@@ -49,7 +49,7 @@ for package in ${PACKAGE_LIST}; do
     cat << EOF >> ${PIPELINE_FILE}
     - label: "Check integrations ${package}"
       key: "test-integrations-${package}"
-      command: ".buildkite/scripts/test_one_package.sh ${package} ${from} ${to}"
+      command: "/var/lib/buildkite-agent/e2e/integrations/.buildkite/scripts/test_one_package.sh ${package} ${from} ${to}"
       # agents:
       #   provider: gcp
       #   image: ${IMAGE_UBUNTU_X86_64}
