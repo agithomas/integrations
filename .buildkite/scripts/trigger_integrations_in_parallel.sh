@@ -65,6 +65,7 @@ for package in ${PACKAGE_LIST}; do
         - build/elastic-stack-dump/*/logs/*.log
         - build/elastic-stack-dump/*/logs/fleet-server-internal/**/*
 EOF
+break
 done
 
 if [ ${packages_to_test} -eq 0 ]; then
