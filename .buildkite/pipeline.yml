@@ -25,10 +25,10 @@ steps:
   - label: ":white_check_mark: Check go sources"
     key: "check"
     command: ".buildkite/scripts/check_sources.sh"
-    agents:
-      image: "${LINUX_AGENT_IMAGE}"
-      cpu: "8"
-      memory: "4G"
+    # agents:
+    #   image: "${LINUX_AGENT_IMAGE}"
+    #   cpu: "8"
+    #   memory: "4G"
 
   - label: "Trigger integrations"
     key: "test-integrations"
