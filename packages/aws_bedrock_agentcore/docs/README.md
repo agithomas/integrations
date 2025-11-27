@@ -67,11 +67,11 @@ An example event for `metrics` looks as following:
 
 ```json
 {
-    "@timestamp": "2025-11-11T18:25:00.000Z",
+    "@timestamp": "2025-11-27T07:55:00.000Z",
     "agent": {
-        "ephemeral_id": "76c9ae9c-f0bd-4b82-8157-161deacb8d15",
-        "id": "f3b14aaf-60db-49eb-b0aa-5b15ac26df85",
-        "name": "elastic-agent-64028",
+        "ephemeral_id": "aadf26bf-2531-4c08-807d-44a99f64c110",
+        "id": "05d9da6e-8f45-4c5d-ae19-61e528a78cd4",
+        "name": "elastic-agent-93733",
         "type": "metricbeat",
         "version": "8.19.0"
     },
@@ -100,37 +100,37 @@ An example event for `metrics` looks as following:
     },
     "data_stream": {
         "dataset": "aws_bedrock_agentcore.metrics",
-        "namespace": "41789",
+        "namespace": "14248",
         "type": "metrics"
     },
     "ecs": {
         "version": "8.0.0"
     },
     "elastic_agent": {
-        "id": "f3b14aaf-60db-49eb-b0aa-5b15ac26df85",
+        "id": "05d9da6e-8f45-4c5d-ae19-61e528a78cd4",
         "snapshot": false,
         "version": "8.19.0"
     },
     "event": {
         "agent_id_status": "verified",
         "dataset": "aws_bedrock_agentcore.metrics",
-        "duration": 11849440086,
-        "ingested": "2025-11-11T18:32:13Z",
+        "duration": 12092593446,
+        "ingested": "2025-11-27T08:05:25Z",
         "module": "aws"
     },
     "host": {
         "architecture": "x86_64",
         "containerized": false,
-        "hostname": "elastic-agent-64028",
+        "hostname": "elastic-agent-93733",
         "ip": [
-            "172.19.0.7",
+            "172.19.0.4",
             "172.31.0.2"
         ],
         "mac": [
-            "82-28-2D-42-E6-26",
-            "AA-84-46-63-32-4C"
+            "1A-CE-27-34-23-0A",
+            "DA-5F-6E-70-9F-86"
         ],
-        "name": "elastic-agent-64028",
+        "name": "elastic-agent-93733",
         "os": {
             "family": "",
             "kernel": "6.14.0-1006-gcp",
@@ -155,6 +155,8 @@ An example event for `metrics` looks as following:
 |---|---|---|---|---|
 | @timestamp | Event timestamp. | date |  |  |
 | agent.id | Unique identifier of this agent (if one exists). Example: For Beats this would be beat.id. | keyword |  |  |
+| aws.bedrock_agentcore.agent_name | The name of the agent runtime. | keyword |  |  |
+| aws.bedrock_agentcore.endpoint_name | The endpoint name of the agent runtime. | keyword |  |  |
 | aws.bedrock_agentcore.metrics.ApiKeyFetchFailures.sum | Total number of failed API key fetch operations from credential providers. | long |  | gauge |
 | aws.bedrock_agentcore.metrics.ApiKeyFetchSuccess.sum | Total number of successful API key fetch operations from credential providers. | long |  | gauge |
 | aws.bedrock_agentcore.metrics.ApiKeyFetchThrottles.sum | Total number of throttled API key fetch operations from credential providers. | long |  | gauge |
