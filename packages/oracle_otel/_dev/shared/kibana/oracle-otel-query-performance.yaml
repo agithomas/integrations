@@ -15,6 +15,8 @@ dashboards:
         data_view: logs-*
         field: oracledb.instance.name
     filters:
+      - field: data_stream.dataset
+        equals: oracledbreceiver.otel
       - field: event_name
         equals: "db.server.top_query"
     panels:
