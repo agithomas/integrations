@@ -22,7 +22,7 @@
     "params": {
       "searchType": "esqlQuery",
       "esqlQuery": {
-        "esql": "FROM metrics-oracledbreceiver.otel-*\n// Transaction usage and limit are in separate TSDB document groups\n| WHERE oracledb.transactions.usage IS NOT NULL\n        AND oracledb.transactions.limit IS NOT NULL\n| STATS usage = MAX(oracledb.transactions.usage),\n        limit_val = MAX(oracledb.transactions.limit)\n        BY oracledb.instance.name, host.name\n// Exclude unlimited (-1)\n| WHERE limit_val > 0\n// Utilisation > 85% — transaction limit exhaustion prevents new transactions\n// Adjust threshold to tune sensitivity\n| EVAL utilisation_pct = ROUND(usage / limit_val * 100.0, 1)\n| WHERE utilisation_pct > 85\n| SORT utilisation_pct DESC"
+        "esql": "FROM metrics-oracledbreceiver.otel-*\n// Transaction usage and limit are in separate TSDB document groups; aggregate across time window\n| STATS usage = MAX(oracledb.transactions.usage),\n        limit_val = MAX(oracledb.transactions.limit)\n        BY oracledb.instance.name, host.name\n// Exclude unlimited (-1)\n| WHERE limit_val > 0\n// Utilisation > 85% — transaction limit exhaustion prevents new transactions\n// Adjust threshold to tune sensitivity\n| EVAL utilisation_pct = ROUND(usage * 100.0 / limit_val, 1)\n| WHERE utilisation_pct > 85\n| SORT utilisation_pct DESC"
       },
       "size": 0,
       "threshold": [0],
