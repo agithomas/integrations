@@ -30,7 +30,7 @@
       "timesliceWindow": "1m"
     },
     "tags": ["oracle", "otel"],
-    "groupBy": ["resource.attributes.oracledb.instance.name"],
+    "groupBy": ["oracledb.instance.name"],
     "artifacts": {
       "dashboards": [
         {"id": "oracle_otel-overview"},
