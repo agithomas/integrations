@@ -1,0 +1,2249 @@
+{
+    "attributes": {
+        "controlGroupInput": {
+            "chainingSystem": "HIERARCHICAL",
+            "controlStyle": "oneLine",
+            "ignoreParentSettingsJSON": {
+                "ignoreFilters": false,
+                "ignoreQuery": false,
+                "ignoreTimerange": false,
+                "ignoreValidations": false
+            },
+            "panelsJSON": {},
+            "showApplySelections": false
+        },
+        "description": "Cluster listing with resource utilization, and node/pod counts.",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [
+                    {
+                        "$state": {
+                            "store": "appState"
+                        },
+                        "meta": {
+                            "alias": null,
+                            "disabled": false,
+                            "field": "data_stream.dataset",
+                            "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                            "key": "data_stream.dataset",
+                            "negate": false,
+                            "params": [
+                                "k8sclusterreceiver.otel",
+                                "kubeletstatsreceiver.otel"
+                            ],
+                            "type": "phrases"
+                        },
+                        "query": {
+                            "bool": {
+                                "minimum_should_match": 1,
+                                "should": [
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "k8sclusterreceiver.otel"
+                                        }
+                                    },
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "kubeletstatsreceiver.otel"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "optionsJSON": {
+            "hidePanelTitles": false,
+            "syncColors": false,
+            "syncCursor": true,
+            "syncTooltips": false,
+            "useMargins": true
+        },
+        "panelsJSON": [
+            {
+                "embeddableConfig": {
+                    "description": "Navigation links to other K8s dashboards.",
+                    "layout": "horizontal",
+                    "links": [
+                        {
+                            "destinationRefName": "link_nav-overview_dashboard",
+                            "id": "nav-overview",
+                            "label": "Overview",
+                            "options": {},
+                            "order": 0,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-clusters_dashboard",
+                            "id": "nav-clusters",
+                            "label": "Clusters",
+                            "options": {},
+                            "order": 1,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-nodes_dashboard",
+                            "id": "nav-nodes",
+                            "label": "Nodes",
+                            "options": {},
+                            "order": 2,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-namespaces_dashboard",
+                            "id": "nav-namespaces",
+                            "label": "Namespaces",
+                            "options": {},
+                            "order": 3,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-workloads_dashboard",
+                            "id": "nav-workloads",
+                            "label": "Workload resources",
+                            "options": {},
+                            "order": 4,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-pods_dashboard",
+                            "id": "nav-pods",
+                            "label": "Pods",
+                            "options": {},
+                            "order": 5,
+                            "type": "dashboardLink"
+                        }
+                    ]
+                },
+                "gridData": {
+                    "h": 2,
+                    "i": "v3-cl-nav",
+                    "w": 48,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "v3-cl-nav",
+                "type": "links"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-2e93542a-863c-83a9-c165-9d6b1b9ce82c",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {
+                                        "2e93542a-863c-83a9-c165-9d6b1b9ce82c": {
+                                            "columnOrder": [
+                                                "cluster",
+                                                "healthy",
+                                                "healthyX0",
+                                                "healthyX1",
+                                                "healthyX2",
+                                                "nodes",
+                                                "namespaces",
+                                                "pods",
+                                                "cpu-util",
+                                                "cpu-utilX0",
+                                                "cpu-utilX1",
+                                                "cpu-utilX2",
+                                                "memory-util",
+                                                "memory-utilX0",
+                                                "memory-utilX1",
+                                                "memory-utilX2",
+                                                "volume-util",
+                                                "volume-utilX0",
+                                                "volume-utilX1",
+                                                "volume-utilX2"
+                                            ],
+                                            "columns": {
+                                                "cluster": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "nodes",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "cpu-util": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "CPU utilization",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 2
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.cpu.usage) / average(k8s.node.allocatable_cpu)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "cpu-utilX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "cpu-utilX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of CPU utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.cpu.usage"
+                                                },
+                                                "cpu-utilX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of CPU utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.allocatable_cpu"
+                                                },
+                                                "cpu-utilX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of CPU utilization",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "cpu-utilX0",
+                                                                "cpu-utilX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 63,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "average(k8s.node.cpu.usage) / average(k8s.node.allocatable_cpu)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "cpu-utilX0",
+                                                        "cpu-utilX1"
+                                                    ]
+                                                },
+                                                "healthy": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "filter": {
+                                                        "language": "kuery",
+                                                        "query": "data_stream.dataset : \"k8sclusterreceiver.otel\" "
+                                                    },
+                                                    "isBucketed": false,
+                                                    "label": "Healthy (% nodes ready)",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "unique_count(k8s.node.name, kql='k8s.node.condition_ready \u003e 0') / unique_count(k8s.node.name)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "healthyX2"
+                                                    ]
+                                                },
+                                                "healthyX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "filter": {
+                                                        "language": "kuery",
+                                                        "query": "(data_stream.dataset : \"k8sclusterreceiver.otel\" ) AND (k8s.node.condition_ready \u003e 0)"
+                                                    },
+                                                    "isBucketed": false,
+                                                    "label": "Part of Healthy (% nodes ready)",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.name"
+                                                },
+                                                "healthyX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "filter": {
+                                                        "language": "kuery",
+                                                        "query": "data_stream.dataset : \"k8sclusterreceiver.otel\" "
+                                                    },
+                                                    "isBucketed": false,
+                                                    "label": "Part of Healthy (% nodes ready)",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.name"
+                                                },
+                                                "healthyX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Healthy (% nodes ready)",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "healthyX0",
+                                                                "healthyX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 93,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "unique_count(k8s.node.name, kql='k8s.node.condition_ready \u003e 0') / unique_count(k8s.node.name)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "healthyX0",
+                                                        "healthyX1"
+                                                    ]
+                                                },
+                                                "memory-util": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Memory working set utilization",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 2
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.memory.working_set) / average(k8s.node.allocatable_memory)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "memory-utilX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "memory-utilX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Memory working set utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.memory.working_set"
+                                                },
+                                                "memory-utilX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Memory working set utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.allocatable_memory"
+                                                },
+                                                "memory-utilX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Memory working set utilization",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "memory-utilX0",
+                                                                "memory-utilX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 75,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "average(k8s.node.memory.working_set) / average(k8s.node.allocatable_memory)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "memory-utilX0",
+                                                        "memory-utilX1"
+                                                    ]
+                                                },
+                                                "namespaces": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Namespaces",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "nodes": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Nodes",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.name"
+                                                },
+                                                "pods": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Pods",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.pod.uid"
+                                                },
+                                                "volume-util": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Disk utilization",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 2
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.filesystem.usage) / average(k8s.node.filesystem.capacity)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "volume-utilX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "volume-utilX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Disk utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.filesystem.usage"
+                                                },
+                                                "volume-utilX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Disk utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.node.filesystem.capacity"
+                                                },
+                                                "volume-utilX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Disk utilization",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "volume-utilX0",
+                                                                "volume-utilX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 74,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "average(k8s.node.filesystem.usage) / average(k8s.node.filesystem.capacity)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "volume-utilX0",
+                                                        "volume-utilX1"
+                                                    ]
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "indexPatternId": "metrics-*",
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "metrics-*",
+                                            "timeField": "@timestamp",
+                                            "title": "metrics-*"
+                                        }
+                                    ],
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "cluster",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true,
+                                        "width": 267.76190476190476
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "healthy",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        },
+                                        "width": 249.42857142857142
+                                    },
+                                    {
+                                        "columnId": "nodes",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "namespaces",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "pods",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "cpu-util",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "memory-util",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "width": 261
+                                    },
+                                    {
+                                        "columnId": "volume-util",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    }
+                                ],
+                                "layerId": "2e93542a-863c-83a9-c165-9d6b1b9ce82c",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "healthy",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "Clusters",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "Cluster listing with node/namespace/pod counts and CPU/memory/volume utilization. Drills down to Cluster Detail.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "7b103a47-6eda-47e5-a949-9855bd58aa13",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "View cluster details"
+                                    },
+                                    "eventId": "b36fd919-d5b8-4319-bb19-c76972910323",
+                                    "triggers": [
+                                        "FILTER_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [
+                        {
+                            "$state": {
+                                "store": "appState"
+                            },
+                            "exists": {
+                                "field": "k8s.node.name"
+                            },
+                            "meta": {
+                                "alias": "Has K8s node data",
+                                "disabled": false,
+                                "key": "k8s.node.name",
+                                "negate": false,
+                                "type": "exists",
+                                "value": "exists"
+                            }
+                        }
+                    ],
+                    "query": {
+                        "language": "kuery",
+                        "query": "k8s.node.name: *"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "750c2f69-7b12-44c1-9bf6-c9856f75f054",
+                    "w": 43,
+                    "x": 5,
+                    "y": 2
+                },
+                "panelIndex": "750c2f69-7b12-44c1-9bf6-c9856f75f054",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "content": "ⓘ  You need to configure `k8s.cluster.name` to see data in this dashboard.\n\n[More information](https://www.google.com)"
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "a7e56b04-c743-44ad-955a-6f59f6dcf3c5",
+                    "w": 5,
+                    "x": 0,
+                    "y": 2
+                },
+                "panelIndex": "a7e56b04-c743-44ad-955a-6f59f6dcf3c5",
+                "type": "DASHBOARD_MARKDOWN"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-b894702e-55a4-4f06-b0f2-a4009117e756",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "b894702e-55a4-4f06-b0f2-a4009117e756": {
+                                            "columnOrder": [
+                                                "col-ts",
+                                                "col-split",
+                                                "metric-X0",
+                                                "metric-X1",
+                                                "metric-math",
+                                                "col-metric"
+                                            ],
+                                            "columns": {
+                                                "col-metric": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Top 10 clusters by unhealthy pods",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "number",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "unique_count(k8s.pod.uid) - unique_count(k8s.pod.uid, kql='k8s.pod.phase: 2')",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "metric-math"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "col-split": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "metric-X0",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "col-ts": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "metric-X0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by pods unhealthy",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.pod.uid"
+                                                },
+                                                "metric-X1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "filter": {
+                                                        "language": "kuery",
+                                                        "query": "k8s.pod.phase: 2"
+                                                    },
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by pods unhealthy",
+                                                    "operationType": "unique_count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.pod.uid"
+                                                },
+                                                "metric-math": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by pods unhealthy",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": "metric-X0 - metric-X1"
+                                                    },
+                                                    "references": [
+                                                        "metric-X0",
+                                                        "metric-X1"
+                                                    ],
+                                                    "scale": "ratio"
+                                                }
+                                            },
+                                            "incompleteColumns": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "col-metric"
+                                        ],
+                                        "layerId": "b894702e-55a4-4f06-b0f2-a4009117e756",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "col-split",
+                                        "xAccessor": "col-ts"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 clusters by unhealthy pods",
+                        "type": "lens",
+                        "version": 1,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Number of unhealthy pods per cluster: total unique pods minus pods in Running phase (phase=2).",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false,
+                    "title": "Top 10 clusters by non-running pods"
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "cl-pods-unhealthy",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 24,
+                    "x": 0,
+                    "y": 12
+                },
+                "panelIndex": "cl-pods-unhealthy",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-0688ea96-350d-4b77-ba15-8ca5de6efdc6",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "0688ea96-350d-4b77-ba15-8ca5de6efdc6": {
+                                            "columnOrder": [
+                                                "col-ts",
+                                                "col-split",
+                                                "metric-X0",
+                                                "metric-X1",
+                                                "metric-math",
+                                                "col-metric"
+                                            ],
+                                            "columns": {
+                                                "col-metric": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Top 10 clusters by desired vs actual pods delta",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "number",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "sum(k8s.deployment.desired) - sum(k8s.deployment.available)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "metric-math"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "col-split": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "metric-X0",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "col-ts": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "metric-X0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by desired/actual pods delta",
+                                                    "operationType": "sum",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.deployment.desired"
+                                                },
+                                                "metric-X1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by desired/actual pods delta",
+                                                    "operationType": "sum",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.deployment.available"
+                                                },
+                                                "metric-math": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by desired/actual pods delta",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": "metric-X0 - metric-X1"
+                                                    },
+                                                    "references": [
+                                                        "metric-X0",
+                                                        "metric-X1"
+                                                    ],
+                                                    "scale": "ratio"
+                                                }
+                                            },
+                                            "incompleteColumns": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "col-metric"
+                                        ],
+                                        "layerId": "0688ea96-350d-4b77-ba15-8ca5de6efdc6",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "col-split",
+                                        "xAccessor": "col-ts"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 clusters by desired vs actual pods delta",
+                        "type": "lens",
+                        "version": 1,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Gap between desired and available replicas across all deployments per cluster. Positive value = under-provisioned.",
+                    "enhancements": {},
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "cl-pods-delta",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 24,
+                    "x": 24,
+                    "y": 12
+                },
+                "panelIndex": "cl-pods-delta",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "1ea314e1-17f4-03aa-04f9-ec403b787c9b": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "b99d0d6d-13fd-610e-8a62-a64bb2fc9c1c",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_clusters",
+                                                    "inMetricDimension": true,
+                                                    "label": "Total clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "b99d0d6d-13fd-610e-8a62-a64bb2fc9c1c",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_clusters",
+                                                    "inMetricDimension": true,
+                                                    "label": "Total clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS total_clusters = COUNT_DISTINCT(k8s.cluster.name)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "color": "#61A2FF",
+                                "colorMode": "background",
+                                "layerId": "1ea314e1-17f4-03aa-04f9-ec403b787c9b",
+                                "layerType": "data",
+                                "metricAccessor": "b99d0d6d-13fd-610e-8a62-a64bb2fc9c1c",
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Total node count. COUNT_DISTINCT(k8s.node.name).",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "FROM metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS total_clusters = COUNT_DISTINCT(k8s.cluster.name)\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "0ff34c53-0f3f-4d17-a8af-fa8d2485db0e",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 6,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "0ff34c53-0f3f-4d17-a8af-fa8d2485db0e",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-8d53f5db-809b-4dbd-9a05-35fff2d8bd00",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "8d53f5db-809b-4dbd-9a05-35fff2d8bd00": {
+                                            "columnOrder": [
+                                                "col-ts",
+                                                "col-split",
+                                                "metric-X0",
+                                                "metric-X1",
+                                                "metric-math",
+                                                "col-metric"
+                                            ],
+                                            "columns": {
+                                                "col-metric": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Top 10 clusters by CPU utilization",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.cpu.usage) / average(k8s.node.allocatable_cpu)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "metric-math"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "col-split": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "metric-X0",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "col-ts": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "metric-X0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by CPU utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.cpu.usage"
+                                                },
+                                                "metric-X1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by CPU utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.allocatable_cpu"
+                                                },
+                                                "metric-math": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by CPU utilization",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": "metric-X0 / metric-X1"
+                                                    },
+                                                    "references": [
+                                                        "metric-X0",
+                                                        "metric-X1"
+                                                    ],
+                                                    "scale": "ratio"
+                                                }
+                                            },
+                                            "incompleteColumns": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "col-metric"
+                                        ],
+                                        "layerId": "8d53f5db-809b-4dbd-9a05-35fff2d8bd00",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "col-split",
+                                        "xAccessor": "col-ts"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 clusters by CPU utilization",
+                        "type": "lens",
+                        "version": 1,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "CPU utilization per cluster: total CPU usage / total allocatable CPU across all nodes.",
+                    "enhancements": {},
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "cl-cpu-util",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 14,
+                    "x": 6,
+                    "y": 0
+                },
+                "panelIndex": "cl-cpu-util",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-bf848d19-3af1-457d-b54f-e8065f297ab8",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "bf848d19-3af1-457d-b54f-e8065f297ab8": {
+                                            "columnOrder": [
+                                                "col-ts",
+                                                "col-split",
+                                                "metric-X0",
+                                                "metric-X1",
+                                                "metric-math",
+                                                "col-metric"
+                                            ],
+                                            "columns": {
+                                                "col-metric": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Top 10 clusters by memory working set utilization",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.memory.working_set) / average(k8s.node.allocatable_memory)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "metric-math"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "col-split": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "metric-X0",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "col-ts": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "metric-X0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by memory working set utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.memory.working_set"
+                                                },
+                                                "metric-X1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by memory working set utilization",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.allocatable_memory"
+                                                },
+                                                "metric-math": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by memory working set utilization",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": "metric-X0 / metric-X1"
+                                                    },
+                                                    "references": [
+                                                        "metric-X0",
+                                                        "metric-X1"
+                                                    ],
+                                                    "scale": "ratio"
+                                                }
+                                            },
+                                            "incompleteColumns": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "col-metric"
+                                        ],
+                                        "layerId": "bf848d19-3af1-457d-b54f-e8065f297ab8",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "col-split",
+                                        "xAccessor": "col-ts"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 clusters by memory working set utilization",
+                        "type": "lens",
+                        "version": 1,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Memory utilization per cluster: total memory usage / total allocatable memory across all nodes.",
+                    "enhancements": {},
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "cl-mem-util",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 14,
+                    "x": 20,
+                    "y": 0
+                },
+                "panelIndex": "cl-mem-util",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-0364f24c-a0a1-4780-b2b2-fdba4752b088",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "0364f24c-a0a1-4780-b2b2-fdba4752b088": {
+                                            "columnOrder": [
+                                                "col-ts",
+                                                "col-split",
+                                                "metric-X0",
+                                                "metric-X1",
+                                                "metric-math",
+                                                "col-metric"
+                                            ],
+                                            "columns": {
+                                                "col-metric": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Top 10 clusters by disk usage",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "average(k8s.node.filesystem.usage) / average(k8s.node.filesystem.capacity)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "metric-math"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "col-split": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Cluster",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "metric-X0",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "col-ts": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "metric-X0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by disk usage",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.filesystem.usage"
+                                                },
+                                                "metric-X1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by disk usage",
+                                                    "operationType": "average",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.node.filesystem.capacity"
+                                                },
+                                                "metric-math": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Top 10 clusters by disk usage",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": "metric-X0 / metric-X1"
+                                                    },
+                                                    "references": [
+                                                        "metric-X0",
+                                                        "metric-X1"
+                                                    ],
+                                                    "scale": "ratio"
+                                                }
+                                            },
+                                            "incompleteColumns": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "col-metric"
+                                        ],
+                                        "layerId": "0364f24c-a0a1-4780-b2b2-fdba4752b088",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "col-split",
+                                        "xAccessor": "col-ts"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 clusters by disk usage",
+                        "type": "lens",
+                        "version": 1,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Disk usage per cluster: total filesystem usage / total filesystem capacity across all nodes.",
+                    "enhancements": {},
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "cl-disk-util",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 14,
+                    "x": 34,
+                    "y": 0
+                },
+                "panelIndex": "cl-disk-util",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "31ef17ec-ccc8-a5a6-f739-980ef5ee0399": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "21ed8510-d70e-9b65-2e2b-9a26ab65c1d4",
+                                                    "customLabel": true,
+                                                    "fieldName": "healthy_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Healthy clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "21ed8510-d70e-9b65-2e2b-9a26ab65c1d4",
+                                                    "customLabel": true,
+                                                    "fieldName": "healthy_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Healthy clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    healthy_count = COUNT(*) WHERE health_status == \"healthy\",\n    total_count = COUNT(*)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "colorMode": "background",
+                                "layerId": "31ef17ec-ccc8-a5a6-f739-980ef5ee0399",
+                                "layerType": "data",
+                                "metricAccessor": "21ed8510-d70e-9b65-2e2b-9a26ab65c1d4",
+                                "palette": {
+                                    "name": "custom",
+                                    "params": {
+                                        "colorStops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": 0
+                                            },
+                                            {
+                                                "color": "#24C292",
+                                                "stop": 1
+                                            }
+                                        ],
+                                        "continuity": "above",
+                                        "maxSteps": 5,
+                                        "name": "custom",
+                                        "progression": "fixed",
+                                        "rangeMax": null,
+                                        "rangeMin": 0,
+                                        "rangeType": "number",
+                                        "reverse": false,
+                                        "steps": 3,
+                                        "stops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": 1
+                                            },
+                                            {
+                                                "color": "#24C292",
+                                                "stop": 2
+                                            }
+                                        ]
+                                    },
+                                    "type": "palette"
+                                },
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Clusters where all nodes are ready. Healthy = every node has condition_ready \u003e 0.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    healthy_count = COUNT(*) WHERE health_status == \"healthy\",\n    total_count = COUNT(*)\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "94b16bd0-9983-48cc-963d-82f6a9fb1ab5",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 6,
+                    "x": 0,
+                    "y": 4
+                },
+                "panelIndex": "94b16bd0-9983-48cc-963d-82f6a9fb1ab5",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "5d48924a-c860-94e1-0eb4-329b8ed25dc7": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "f9151f73-236a-d2f9-3e5a-00af4d868177",
+                                                    "customLabel": true,
+                                                    "fieldName": "unhealthy_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Unhealthy clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "f9151f73-236a-d2f9-3e5a-00af4d868177",
+                                                    "customLabel": true,
+                                                    "fieldName": "unhealthy_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Unhealthy clusters",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    unhealthy_count = COUNT(*) WHERE health_status == \"unhealthy\",\n    total_count = COUNT(*)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [
+                                {
+                                    "$state": {
+                                        "store": "appState"
+                                    },
+                                    "exists": {
+                                        "field": "k8s.node.name"
+                                    },
+                                    "meta": {
+                                        "alias": "Has K8s node data",
+                                        "disabled": false,
+                                        "key": "k8s.node.name",
+                                        "negate": false,
+                                        "type": "exists",
+                                        "value": "exists"
+                                    }
+                                }
+                            ],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": "k8s.node.name: *"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "colorMode": "background",
+                                "layerId": "5d48924a-c860-94e1-0eb4-329b8ed25dc7",
+                                "layerType": "data",
+                                "metricAccessor": "f9151f73-236a-d2f9-3e5a-00af4d868177",
+                                "palette": {
+                                    "name": "custom",
+                                    "params": {
+                                        "colorStops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": null
+                                            },
+                                            {
+                                                "color": "#f6726a",
+                                                "stop": 1
+                                            }
+                                        ],
+                                        "continuity": "all",
+                                        "maxSteps": 5,
+                                        "name": "custom",
+                                        "progression": "fixed",
+                                        "rangeMax": null,
+                                        "rangeMin": null,
+                                        "rangeType": "number",
+                                        "reverse": false,
+                                        "steps": 3,
+                                        "stops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": 1
+                                            },
+                                            {
+                                                "color": "#f6726a",
+                                                "stop": 2
+                                            }
+                                        ]
+                                    },
+                                    "type": "palette"
+                                },
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Clusters with at least one not-ready node. Uses k8s.node.condition_ready to classify health.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    unhealthy_count = COUNT(*) WHERE health_status == \"unhealthy\",\n    total_count = COUNT(*)\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "0b54ac8f-b096-4547-b223-b3bdc24e23fa",
+                    "sectionId": "section-per-cluster-metrics",
+                    "w": 6,
+                    "x": 0,
+                    "y": 8
+                },
+                "panelIndex": "0b54ac8f-b096-4547-b223-b3bdc24e23fa",
+                "type": "lens"
+            }
+        ],
+        "sections": [
+            {
+                "collapsed": false,
+                "gridData": {
+                    "i": "section-per-cluster-metrics",
+                    "y": 14
+                },
+                "title": "Clusters metrics"
+            }
+        ],
+        "timeFrom": "now-1h",
+        "timeRestore": true,
+        "timeTo": "now",
+        "title": "[PROD][OTEL][Kubernetes] Clusters"
+    },
+    "coreMigrationVersion": "8.8.0",
+    "created_at": "2026-03-19T14:49:19.046Z",
+    "id": "kubernetes_otel-29225f58-cba4-4442-b178-fb5e0a753cf5",
+    "references": [
+        {
+            "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
+            "name": "v3-cl-nav:link_nav-overview_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-29225f58-cba4-4442-b178-fb5e0a753cf5",
+            "name": "v3-cl-nav:link_nav-clusters_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-0c88decf-de83-47a4-a5df-0a79dc8daff5",
+            "name": "v3-cl-nav:link_nav-nodes_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-c0765efe-f172-42c4-a2ea-f4552b6f42dc",
+            "name": "v3-cl-nav:link_nav-namespaces_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-0b70c6de-4d53-47c4-9844-5f964ba04a6f",
+            "name": "v3-cl-nav:link_nav-workloads_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v3-cl-nav:link_nav-pods_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "750c2f69-7b12-44c1-9bf6-c9856f75f054:indexpattern-datasource-layer-2e93542a-863c-83a9-c165-9d6b1b9ce82c",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-7b103a47-6eda-47e5-a949-9855bd58aa13",
+            "name": "750c2f69-7b12-44c1-9bf6-c9856f75f054:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:b36fd919-d5b8-4319-bb19-c76972910323:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "cl-pods-unhealthy:indexpattern-datasource-layer-b894702e-55a4-4f06-b0f2-a4009117e756",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "cl-pods-delta:indexpattern-datasource-layer-0688ea96-350d-4b77-ba15-8ca5de6efdc6",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "cl-cpu-util:indexpattern-datasource-layer-8d53f5db-809b-4dbd-9a05-35fff2d8bd00",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "cl-mem-util:indexpattern-datasource-layer-bf848d19-3af1-457d-b54f-e8065f297ab8",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "cl-disk-util:indexpattern-datasource-layer-0364f24c-a0a1-4780-b2b2-fdba4752b088",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+            "type": "index-pattern"
+        }
+    ],
+    "type": "dashboard",
+    "typeMigrationVersion": "10.3.0",
+    "updated_by": "u_elastic_found"
+}

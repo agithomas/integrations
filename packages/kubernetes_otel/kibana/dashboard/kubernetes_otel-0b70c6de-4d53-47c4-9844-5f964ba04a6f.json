@@ -1,0 +1,2799 @@
+{
+    "attributes": {
+        "controlGroupInput": {
+            "chainingSystem": "HIERARCHICAL",
+            "controlStyle": "oneLine",
+            "ignoreParentSettingsJSON": {
+                "ignoreFilters": false,
+                "ignoreQuery": false,
+                "ignoreTimerange": false,
+                "ignoreValidations": false
+            },
+            "panelsJSON": {},
+            "showApplySelections": false
+        },
+        "description": "Workload monitoring with Deployments, DaemonSets, StatefulSets, Jobs, container restart trends, and deployment drilldowns.",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [
+                    {
+                        "$state": {
+                            "store": "appState"
+                        },
+                        "meta": {
+                            "alias": null,
+                            "disabled": false,
+                            "field": "data_stream.dataset",
+                            "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                            "key": "data_stream.dataset",
+                            "negate": false,
+                            "params": [
+                                "k8sclusterreceiver.otel",
+                                "kubeletstatsreceiver.otel"
+                            ],
+                            "type": "phrases"
+                        },
+                        "query": {
+                            "bool": {
+                                "minimum_should_match": 1,
+                                "should": [
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "k8sclusterreceiver.otel"
+                                        }
+                                    },
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "kubeletstatsreceiver.otel"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "optionsJSON": {
+            "hidePanelTitles": false,
+            "syncColors": false,
+            "syncCursor": true,
+            "syncTooltips": false,
+            "useMargins": true
+        },
+        "panelsJSON": [
+            {
+                "embeddableConfig": {
+                    "description": "Navigation links to other K8s dashboards.",
+                    "hide_border": true,
+                    "hide_title": true,
+                    "layout": "horizontal",
+                    "links": [
+                        {
+                            "destinationRefName": "link_nav-overview_dashboard",
+                            "id": "nav-overview",
+                            "label": "Overview",
+                            "options": {},
+                            "order": 0,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-clusters_dashboard",
+                            "id": "nav-clusters",
+                            "label": "Clusters",
+                            "options": {},
+                            "order": 1,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-nodes_dashboard",
+                            "id": "nav-nodes",
+                            "label": "Nodes",
+                            "options": {},
+                            "order": 2,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-namespaces_dashboard",
+                            "id": "nav-namespaces",
+                            "label": "Namespaces",
+                            "options": {},
+                            "order": 3,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-workloads_dashboard",
+                            "id": "nav-workloads",
+                            "label": "Workload resources",
+                            "options": {},
+                            "order": 4,
+                            "type": "dashboardLink"
+                        },
+                        {
+                            "destinationRefName": "link_nav-pods_dashboard",
+                            "id": "nav-pods",
+                            "label": "Pods",
+                            "options": {},
+                            "order": 5,
+                            "type": "dashboardLink"
+                        }
+                    ]
+                },
+                "gridData": {
+                    "h": 2,
+                    "i": "v2-workloads-alt-nav",
+                    "w": 48,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "v2-workloads-alt-nav",
+                "type": "links"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "layers": {
+                                        "c069c5ac-dcdc-f1b8-1f4e-2539b0f16301": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "9f004cfb-3448-bdfe-58ee-2c77580a9c20",
+                                                    "customLabel": true,
+                                                    "fieldName": "count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Deployments",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "9f004cfb-3448-bdfe-58ee-2c77580a9c20",
+                                                    "customLabel": true,
+                                                    "fieldName": "count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Deployments",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name)\n"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "color": "#61A2FF",
+                                "colorMode": "background",
+                                "layerId": "c069c5ac-dcdc-f1b8-1f4e-2539b0f16301",
+                                "layerType": "data",
+                                "metricAccessor": "9f004cfb-3448-bdfe-58ee-2c77580a9c20",
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Total deployment count. COUNT_DISTINCT(k8s.deployment.name).",
+                    "filters": [],
+                    "hide_title": true,
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 6,
+                    "i": "v2-workloads-alt-total-deployments",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 6,
+                    "x": 0,
+                    "y": 16
+                },
+                "panelIndex": "v2-workloads-alt-total-deployments",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "f5b1d7b4-0818-809d-e59d-829dcd9c8c7b": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "Container restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "Container restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "FROM metrics-*\n| WHERE k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "colorMode": "background",
+                                "layerId": "f5b1d7b4-0818-809d-e59d-829dcd9c8c7b",
+                                "layerType": "data",
+                                "metricAccessor": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                "palette": {
+                                    "name": "custom",
+                                    "params": {
+                                        "colorStops": [
+                                            {
+                                                "color": "#24c292",
+                                                "stop": null
+                                            },
+                                            {
+                                                "color": "#F6726A",
+                                                "stop": 0
+                                            }
+                                        ],
+                                        "continuity": "all",
+                                        "maxSteps": 5,
+                                        "name": "custom",
+                                        "progression": "fixed",
+                                        "rangeMax": null,
+                                        "rangeMin": null,
+                                        "rangeType": "number",
+                                        "reverse": false,
+                                        "steps": 3,
+                                        "stops": [
+                                            {
+                                                "color": "#24c292",
+                                                "stop": 0
+                                            },
+                                            {
+                                                "color": "#F6726A",
+                                                "stop": 3408
+                                            }
+                                        ]
+                                    },
+                                    "type": "palette"
+                                },
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Total container restarts. MAX(k8s.container.restarts) per pod+container, then SUM.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "FROM metrics-*\n| WHERE k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 6,
+                    "i": "c585ade6-5e12-4a1c-aea7-c2ebc1189e98",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 6,
+                    "x": 0,
+                    "y": 22
+                },
+                "panelIndex": "c585ade6-5e12-4a1c-aea7-c2ebc1189e98",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "layers": {
+                                        "fdfad702-0d8c-6690-f73b-71e4e64101a4": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "58394d5d-f244-ac4d-0efc-444da7cb5700",
+                                                    "customLabel": true,
+                                                    "fieldName": "desired",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "1d07e96c-590b-03f1-4108-cbe912c2ac4a",
+                                                    "customLabel": true,
+                                                    "fieldName": "available",
+                                                    "inMetricDimension": true,
+                                                    "label": "Available",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "24258928-91bb-7193-d4df-0329829a7575",
+                                                    "customLabel": false,
+                                                    "fieldName": "timestamp",
+                                                    "label": "timestamp"
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "58394d5d-f244-ac4d-0efc-444da7cb5700",
+                                                    "customLabel": true,
+                                                    "fieldName": "desired",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "1d07e96c-590b-03f1-4108-cbe912c2ac4a",
+                                                    "customLabel": true,
+                                                    "fieldName": "available",
+                                                    "inMetricDimension": true,
+                                                    "label": "Available",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "24258928-91bb-7193-d4df-0329829a7575",
+                                                    "customLabel": false,
+                                                    "fieldName": "timestamp",
+                                                    "label": "timestamp"
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "TS metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND (k8s.deployment.available IS NOT NULL OR k8s.deployment.desired IS NOT NULL)\n| STATS\n    available = SUM(k8s.deployment.available),\n    desired = SUM(k8s.deployment.desired)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, available, desired\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "TS metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND (k8s.deployment.available IS NOT NULL OR k8s.deployment.desired IS NOT NULL)\n| STATS\n    available = SUM(k8s.deployment.available),\n    desired = SUM(k8s.deployment.desired)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, available, desired\n"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "58394d5d-f244-ac4d-0efc-444da7cb5700",
+                                            "1d07e96c-590b-03f1-4108-cbe912c2ac4a"
+                                        ],
+                                        "layerId": "fdfad702-0d8c-6690-f73b-71e4e64101a4",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "xAccessor": "24258928-91bb-7193-d4df-0329829a7575"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Deployment replicas over time",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Deployment replica trend. SUM(k8s.deployment.available) vs SUM(k8s.deployment.desired) per 1m bucket.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "TS metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND (k8s.deployment.available IS NOT NULL OR k8s.deployment.desired IS NOT NULL)\n| STATS\n    available = SUM(k8s.deployment.available),\n    desired = SUM(k8s.deployment.desired)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, available, desired\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false,
+                    "title": "Deployment replicas over time"
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "v2-workloads-alt-deploy-trend",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 13,
+                    "x": 6,
+                    "y": 16
+                },
+                "panelIndex": "v2-workloads-alt-deploy-trend",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "layers": {
+                                        "9d698809-25fc-7d1d-9030-db07c457d87b": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "014ea010-d756-94db-97ff-f77ab7e7788f",
+                                                    "customLabel": true,
+                                                    "fieldName": "Desired scheduled",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired scheduled",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "cc602dc1-bbd6-334b-b4f0-87b9fa141ed1",
+                                                    "customLabel": true,
+                                                    "fieldName": "Current scheduled",
+                                                    "inMetricDimension": true,
+                                                    "label": "Current scheduled",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "3b77cf63-db0d-00a4-1a3e-eb05af4e63d0",
+                                                    "customLabel": true,
+                                                    "fieldName": "Ready",
+                                                    "inMetricDimension": true,
+                                                    "label": "Ready",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "24258928-91bb-7193-d4df-0329829a7575",
+                                                    "customLabel": false,
+                                                    "fieldName": "timestamp",
+                                                    "label": "timestamp"
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "014ea010-d756-94db-97ff-f77ab7e7788f",
+                                                    "customLabel": true,
+                                                    "fieldName": "Desired scheduled",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired scheduled",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "cc602dc1-bbd6-334b-b4f0-87b9fa141ed1",
+                                                    "customLabel": true,
+                                                    "fieldName": "Current scheduled",
+                                                    "inMetricDimension": true,
+                                                    "label": "Current scheduled",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "3b77cf63-db0d-00a4-1a3e-eb05af4e63d0",
+                                                    "customLabel": true,
+                                                    "fieldName": "Ready",
+                                                    "inMetricDimension": true,
+                                                    "label": "Ready",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "24258928-91bb-7193-d4df-0329829a7575",
+                                                    "customLabel": false,
+                                                    "fieldName": "timestamp",
+                                                    "label": "timestamp"
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "TS metrics-*\n| WHERE k8s.daemonset.name IS NOT NULL\n  AND (k8s.daemonset.current_scheduled_nodes IS NOT NULL OR k8s.daemonset.desired_scheduled_nodes IS NOT NULL)\n| STATS\n    `Current scheduled` = SUM(k8s.daemonset.current_scheduled_nodes),\n    `Desired scheduled` = SUM(k8s.daemonset.desired_scheduled_nodes),\n    Ready = SUM(k8s.daemonset.ready_nodes)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, `Desired scheduled`, `Current scheduled`, Ready\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "TS metrics-*\n| WHERE k8s.daemonset.name IS NOT NULL\n  AND (k8s.daemonset.current_scheduled_nodes IS NOT NULL OR k8s.daemonset.desired_scheduled_nodes IS NOT NULL)\n| STATS\n    `Current scheduled` = SUM(k8s.daemonset.current_scheduled_nodes),\n    `Desired scheduled` = SUM(k8s.daemonset.desired_scheduled_nodes),\n    Ready = SUM(k8s.daemonset.ready_nodes)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, `Desired scheduled`, `Current scheduled`, Ready\n"
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "014ea010-d756-94db-97ff-f77ab7e7788f",
+                                            "cc602dc1-bbd6-334b-b4f0-87b9fa141ed1",
+                                            "3b77cf63-db0d-00a4-1a3e-eb05af4e63d0"
+                                        ],
+                                        "layerId": "9d698809-25fc-7d1d-9030-db07c457d87b",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "xAccessor": "24258928-91bb-7193-d4df-0329829a7575"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "DaemonSet scheduling over time",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "DaemonSet scheduling trend. SUM of desired, scheduled, and ready nodes per 1m bucket.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "esql": "TS metrics-*\n| WHERE k8s.daemonset.name IS NOT NULL\n  AND (k8s.daemonset.current_scheduled_nodes IS NOT NULL OR k8s.daemonset.desired_scheduled_nodes IS NOT NULL)\n| STATS\n    current_scheduled = SUM(k8s.daemonset.current_scheduled_nodes),\n    desired_scheduled = SUM(k8s.daemonset.desired_scheduled_nodes),\n    ready = SUM(k8s.daemonset.ready_nodes)\n  BY timestamp = TBUCKET(1 minute)\n| KEEP timestamp, desired_scheduled, current_scheduled, ready\n"
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false,
+                    "title": "DaemonSet scheduling over time"
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "v2-workloads-alt-daemonset-trend",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 14,
+                    "x": 19,
+                    "y": 16
+                },
+                "panelIndex": "v2-workloads-alt-daemonset-trend",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-4179463d-1ce8-8b21-d9a5-3a00b1f9a05c",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "4179463d-1ce8-8b21-d9a5-3a00b1f9a05c": {
+                                            "columnOrder": [
+                                                "a01376ce-7bfd-f032-8917-96da6803fcc4",
+                                                "f54e0fe4-5485-fd34-52ef-10422d853cc7",
+                                                "09b98e37-f930-35a4-f0e3-0aa19e463867"
+                                            ],
+                                            "columns": {
+                                                "09b98e37-f930-35a4-f0e3-0aa19e463867": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Restarts",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.container.restarts"
+                                                },
+                                                "a01376ce-7bfd-f032-8917-96da6803fcc4": {
+                                                    "dataType": "date",
+                                                    "isBucketed": true,
+                                                    "label": "@timestamp",
+                                                    "operationType": "date_histogram",
+                                                    "params": {
+                                                        "dropPartials": false,
+                                                        "includeEmptyRows": true,
+                                                        "interval": "auto"
+                                                    },
+                                                    "scale": "interval",
+                                                    "sourceField": "@timestamp"
+                                                },
+                                                "f54e0fe4-5485-fd34-52ef-10422d853cc7": {
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Top 10 values of k8s.deployment.name",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "09b98e37-f930-35a4-f0e3-0aa19e463867",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 10
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.deployment.name"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": false,
+                                    "yLeft": false
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "09b98e37-f930-35a4-f0e3-0aa19e463867"
+                                        ],
+                                        "layerId": "4179463d-1ce8-8b21-d9a5-3a00b1f9a05c",
+                                        "layerType": "data",
+                                        "seriesType": "line",
+                                        "showGridlines": false,
+                                        "splitAccessor": "f54e0fe4-5485-fd34-52ef-10422d853cc7",
+                                        "splitAccessors": [
+                                            "f54e0fe4-5485-fd34-52ef-10422d853cc7"
+                                        ],
+                                        "xAccessor": "a01376ce-7bfd-f032-8917-96da6803fcc4"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "bottom"
+                                },
+                                "preferredSeriesType": "line",
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "Top 10 deployments by container restarts",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsXY"
+                    },
+                    "description": "Container restarts over time per deployment. max(k8s.container.restarts) broken down by k8s.deployment.name.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": []
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false,
+                    "title": "Top 10 deployments by container restarts"
+                },
+                "gridData": {
+                    "h": 12,
+                    "i": "v2-workloads-alt-restart-trend",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 15,
+                    "x": 33,
+                    "y": 16
+                },
+                "panelIndex": "v2-workloads-alt-restart-trend",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-6e864d45-9d8c-3cc2-4706-333b17d9e581",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {
+                                        "6e864d45-9d8c-3cc2-4706-333b17d9e581": {
+                                            "columnOrder": [
+                                                "deployment",
+                                                "namespace",
+                                                "cluster",
+                                                "available",
+                                                "desired",
+                                                "availability",
+                                                "availabilityX0",
+                                                "availabilityX1",
+                                                "availabilityX2",
+                                                "restarts"
+                                            ],
+                                            "columns": {
+                                                "availability": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Availability",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 2
+                                                            }
+                                                        },
+                                                        "formula": "max(k8s.deployment.available) / max(k8s.deployment.desired)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "availabilityX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "availabilityX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.deployment.available"
+                                                },
+                                                "availabilityX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.deployment.desired"
+                                                },
+                                                "availabilityX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "availabilityX0",
+                                                                "availabilityX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 59,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "max(k8s.deployment.available) / max(k8s.deployment.desired)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "availabilityX0",
+                                                        "availabilityX1"
+                                                    ]
+                                                },
+                                                "available": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Available replicas",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.deployment.available"
+                                                },
+                                                "cluster": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": false,
+                                                    "label": "Cluster",
+                                                    "operationType": "last_value",
+                                                    "params": {
+                                                        "sortField": "@timestamp"
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "deployment": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Deployment",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "available",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.deployment.name"
+                                                },
+                                                "desired": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Desired replicas",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.deployment.desired"
+                                                },
+                                                "namespace": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Namespace",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "available",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "restarts": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Container restarts",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.container.restarts"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "indexPatternId": "metrics-*",
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "metrics-*",
+                                            "timeField": "@timestamp",
+                                            "title": "metrics-*"
+                                        }
+                                    ],
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "deployment",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true,
+                                        "width": 343.2857142857143
+                                    },
+                                    {
+                                        "columnId": "namespace",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true,
+                                        "width": 258.45238095238096
+                                    },
+                                    {
+                                        "columnId": "cluster",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "available",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "desired",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "availability",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "restarts",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 1,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1565
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    }
+                                ],
+                                "layerId": "6e864d45-9d8c-3cc2-4706-333b17d9e581",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "availability",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "Deployments",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "Deployment listing with available/desired counts, availability percentage, and restarts. Drills down to Deployment Detail.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "8cf34def-60de-4bf3-9b06-d4ffc6cb4236",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "1. View deployment details"
+                                    },
+                                    "eventId": "dd-wl-deploy-view-detail",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                },
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "2. View namespace details"
+                                    },
+                                    "eventId": "dd-wl-deploy-view-ns",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 16,
+                    "i": "0864eabf-5198-4270-b84d-7d6bb92e72f6",
+                    "sectionId": "section-deploy-metrics",
+                    "w": 48,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "0864eabf-5198-4270-b84d-7d6bb92e72f6",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-ca3933ee-6754-e4a7-55c9-623fd46f3b75",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {
+                                        "ca3933ee-6754-e4a7-55c9-623fd46f3b75": {
+                                            "columnOrder": [
+                                                "daemonset",
+                                                "namespace",
+                                                "cluster",
+                                                "current",
+                                                "desired",
+                                                "ready",
+                                                "misscheduled",
+                                                "ds-avail",
+                                                "ds-availX0",
+                                                "ds-availX1",
+                                                "ds-availX2"
+                                            ],
+                                            "columns": {
+                                                "cluster": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": false,
+                                                    "label": "Cluster",
+                                                    "operationType": "last_value",
+                                                    "params": {
+                                                        "sortField": "@timestamp"
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.cluster.name"
+                                                },
+                                                "current": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Scheduled nodes",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.daemonset.current_scheduled_nodes"
+                                                },
+                                                "daemonset": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "DaemonSet",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "current",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.daemonset.name"
+                                                },
+                                                "desired": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Desired nodes",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.daemonset.desired_scheduled_nodes"
+                                                },
+                                                "ds-avail": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Availability",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "max(k8s.daemonset.ready_nodes) / max(k8s.daemonset.desired_scheduled_nodes)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "ds-availX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "ds-availX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.daemonset.ready_nodes"
+                                                },
+                                                "ds-availX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.daemonset.desired_scheduled_nodes"
+                                                },
+                                                "ds-availX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "ds-availX0",
+                                                                "ds-availX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 74,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "max(k8s.daemonset.ready_nodes) / max(k8s.daemonset.desired_scheduled_nodes)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "ds-availX0",
+                                                        "ds-availX1"
+                                                    ]
+                                                },
+                                                "misscheduled": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Misscheduled nodes",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.daemonset.misscheduled_nodes"
+                                                },
+                                                "namespace": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Namespace",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "current",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "ready": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Ready nodes",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.daemonset.ready_nodes"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "indexPatternId": "metrics-*",
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "metrics-*",
+                                            "timeField": "@timestamp",
+                                            "title": "metrics-*"
+                                        }
+                                    ],
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "daemonset",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "namespace",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "cluster",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "current",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "desired",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "ready",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "misscheduled",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "ds-avail",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    }
+                                ],
+                                "layerId": "ca3933ee-6754-e4a7-55c9-623fd46f3b75",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "ds-avail",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "DaemonSets",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "DaemonSet listing with scheduled/desired/ready/misscheduled node counts.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "aa37d8f8-56ca-4452-96ad-456b5154e23d",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "1. View pods in DaemonSet"
+                                    },
+                                    "eventId": "89f92942-ffe9-4d67-83e9-364fb21da376",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                },
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "2. View namespace details"
+                                    },
+                                    "eventId": "0a000001-ds-ns-0000-0000-000000000001",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 10,
+                    "i": "v2-workloads-alt-daemonsets-table",
+                    "sectionId": "section-other-workloads",
+                    "w": 48,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "v2-workloads-alt-daemonsets-table",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-c0cf8466-2257-53c1-bda9-3c4e855c684a",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "c0cf8466-2257-53c1-bda9-3c4e855c684a": {
+                                            "columnOrder": [
+                                                "statefulset",
+                                                "namespace",
+                                                "current",
+                                                "desired",
+                                                "ready",
+                                                "updated",
+                                                "ss-availability",
+                                                "ss-availabilityX0",
+                                                "ss-availabilityX1",
+                                                "ss-availabilityX2"
+                                            ],
+                                            "columns": {
+                                                "current": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Current pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.statefulset.current_pods"
+                                                },
+                                                "desired": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Desired pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.statefulset.desired_pods"
+                                                },
+                                                "namespace": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Namespace",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "current",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "ready": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Ready pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.statefulset.ready_pods"
+                                                },
+                                                "ss-availability": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Availability",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "max(k8s.statefulset.ready_pods) / max(k8s.statefulset.desired_pods)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "ss-availabilityX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "ss-availabilityX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.statefulset.ready_pods"
+                                                },
+                                                "ss-availabilityX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.statefulset.desired_pods"
+                                                },
+                                                "ss-availabilityX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "ss-availabilityX0",
+                                                                "ss-availabilityX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 66,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "max(k8s.statefulset.ready_pods) / max(k8s.statefulset.desired_pods)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "ss-availabilityX0",
+                                                        "ss-availabilityX1"
+                                                    ]
+                                                },
+                                                "statefulset": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "StatefulSet",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "current",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.statefulset.name"
+                                                },
+                                                "updated": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Updated pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.statefulset.updated_pods"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "statefulset",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "namespace",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "current",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "desired",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "ready",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "updated",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "ss-availability",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    }
+                                ],
+                                "layerId": "c0cf8466-2257-53c1-bda9-3c4e855c684a",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "ss-availability",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "StatefulSets",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "StatefulSet listing with current/desired/ready/updated pod counts.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "aa37d8f8-56ca-4452-96ad-456b5154e23d",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "1. View pods in StatefulSet"
+                                    },
+                                    "eventId": "cf22f2de-87bd-4ceb-85bf-01d6d4d8c75f",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                },
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "2. View namespace details"
+                                    },
+                                    "eventId": "0a000001-ss-ns-0000-0000-000000000001",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 8,
+                    "i": "v2-workloads-alt-statefulsets-table",
+                    "sectionId": "section-other-workloads",
+                    "w": 24,
+                    "x": 0,
+                    "y": 10
+                },
+                "panelIndex": "v2-workloads-alt-statefulsets-table",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-a9c5e41c-623c-b9db-17b1-603e605a8f2c",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {
+                                        "a9c5e41c-623c-b9db-17b1-603e605a8f2c": {
+                                            "columnOrder": [
+                                                "job",
+                                                "namespace",
+                                                "active",
+                                                "successful",
+                                                "failed",
+                                                "desired",
+                                                "job-avail",
+                                                "job-availX0",
+                                                "job-availX1",
+                                                "job-availX2"
+                                            ],
+                                            "columns": {
+                                                "active": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Active pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.job.active_pods"
+                                                },
+                                                "desired": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Desired pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.job.desired_successful_pods"
+                                                },
+                                                "failed": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Failed pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.job.failed_pods"
+                                                },
+                                                "job": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Job",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "active",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.job.name"
+                                                },
+                                                "job-avail": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Completion",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "max(k8s.job.successful_pods) / max(k8s.job.desired_successful_pods)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "job-availX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "job-availX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.job.successful_pods"
+                                                },
+                                                "job-availX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.job.desired_successful_pods"
+                                                },
+                                                "job-availX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "job-availX0",
+                                                                "job-availX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 66,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "max(k8s.job.successful_pods) / max(k8s.job.desired_successful_pods)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "job-availX0",
+                                                        "job-availX1"
+                                                    ]
+                                                },
+                                                "namespace": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Namespace",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "active",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 100
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "successful": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Successful pods",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.job.successful_pods"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "indexPatternId": "metrics-*",
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "currentIndexPatternId": "metrics-*",
+                                    "layers": {}
+                                },
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "metrics-*",
+                                            "timeField": "@timestamp",
+                                            "title": "metrics-*"
+                                        }
+                                    ],
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "job",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true,
+                                        "width": 216
+                                    },
+                                    {
+                                        "columnId": "namespace",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "active",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "successful",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "failed",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "desired",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "job-avail",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    }
+                                ],
+                                "layerId": "a9c5e41c-623c-b9db-17b1-603e605a8f2c",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "job-avail",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "Jobs",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "Job listing with active/successful/failed/desired pod counts.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "aa37d8f8-56ca-4452-96ad-456b5154e23d",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "1. View pods in Job"
+                                    },
+                                    "eventId": "aacd3629-a5e0-486a-8afa-dd361888c0c1",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                },
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "2. View namespace details"
+                                    },
+                                    "eventId": "0a000001-job-ns-0000-0000-000000000001",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false
+                },
+                "gridData": {
+                    "h": 8,
+                    "i": "v2-workloads-alt-jobs-table",
+                    "sectionId": "section-other-workloads",
+                    "w": 24,
+                    "x": 24,
+                    "y": 10
+                },
+                "panelIndex": "v2-workloads-alt-jobs-table",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "metrics-*",
+                                "name": "indexpattern-datasource-layer-25f5424a-654d-488f-bea7-ef7a0cd461e7",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "25f5424a-654d-488f-bea7-ef7a0cd461e7": {
+                                            "columnOrder": [
+                                                "replicaset",
+                                                "namespace",
+                                                "available",
+                                                "desired",
+                                                "rs-avail",
+                                                "rs-availX0",
+                                                "rs-availX1",
+                                                "rs-availX2"
+                                            ],
+                                            "columns": {
+                                                "available": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Available replicas",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.replicaset.available"
+                                                },
+                                                "desired": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Desired replicas",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "k8s.replicaset.desired"
+                                                },
+                                                "namespace": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Namespace",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "type": "alphabetical"
+                                                        },
+                                                        "orderDirection": "asc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 50
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.namespace.name"
+                                                },
+                                                "replicaset": {
+                                                    "customLabel": true,
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "ReplicaSet",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "type": "alphabetical"
+                                                        },
+                                                        "orderDirection": "asc",
+                                                        "otherBucket": false,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 50
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "k8s.replicaset.name"
+                                                },
+                                                "rs-avail": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Availability",
+                                                    "operationType": "formula",
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        },
+                                                        "formula": "max(k8s.replicaset.available) / max(k8s.replicaset.desired)",
+                                                        "isFormulaBroken": false
+                                                    },
+                                                    "references": [
+                                                        "rs-availX2"
+                                                    ],
+                                                    "scale": "ratio"
+                                                },
+                                                "rs-availX0": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.replicaset.available"
+                                                },
+                                                "rs-availX1": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "max",
+                                                    "params": {
+                                                        "emptyAsNull": false
+                                                    },
+                                                    "sourceField": "k8s.replicaset.desired"
+                                                },
+                                                "rs-availX2": {
+                                                    "customLabel": true,
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Part of Availability",
+                                                    "operationType": "math",
+                                                    "params": {
+                                                        "tinymathAst": {
+                                                            "args": [
+                                                                "rs-availX0",
+                                                                "rs-availX1"
+                                                            ],
+                                                            "location": {
+                                                                "max": 58,
+                                                                "min": 0
+                                                            },
+                                                            "name": "divide",
+                                                            "text": "max(k8s.replicaset.available) / max(k8s.replicaset.desired)",
+                                                            "type": "function"
+                                                        }
+                                                    },
+                                                    "references": [
+                                                        "rs-availX0",
+                                                        "rs-availX1"
+                                                    ]
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "indexpattern": {
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "columns": [
+                                    {
+                                        "columnId": "replicaset",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "namespace",
+                                        "isMetric": false,
+                                        "isTransposed": false,
+                                        "oneClickFilter": true
+                                    },
+                                    {
+                                        "columnId": "available",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "columnId": "desired",
+                                        "isMetric": true,
+                                        "isTransposed": false
+                                    },
+                                    {
+                                        "colorMode": "cell",
+                                        "columnId": "rs-avail",
+                                        "isMetric": true,
+                                        "isTransposed": false,
+                                        "palette": {
+                                            "name": "custom",
+                                            "params": {
+                                                "colorStops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 0
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 1
+                                                    }
+                                                ],
+                                                "continuity": "above",
+                                                "name": "custom",
+                                                "rangeMax": null,
+                                                "rangeMin": 0,
+                                                "rangeType": "number",
+                                                "reverse": false,
+                                                "steps": 5,
+                                                "stops": [
+                                                    {
+                                                        "color": "#F6726A",
+                                                        "stop": 1
+                                                    },
+                                                    {
+                                                        "color": "#24C292",
+                                                        "stop": 2
+                                                    }
+                                                ]
+                                            },
+                                            "type": "palette"
+                                        }
+                                    }
+                                ],
+                                "layerId": "25f5424a-654d-488f-bea7-ef7a0cd461e7",
+                                "layerType": "data",
+                                "sorting": {
+                                    "columnId": "rs-avail",
+                                    "direction": "asc"
+                                }
+                            }
+                        },
+                        "title": "ReplicaSets",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsDatatable"
+                    },
+                    "description": "StatefulSet listing with current/desired/ready/updated pod counts.",
+                    "enhancements": {
+                        "dynamicActions": {
+                            "events": [
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "aa37d8f8-56ca-4452-96ad-456b5154e23d",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "1. View pods in ReplicaSet"
+                                    },
+                                    "eventId": "8ec4f81e-5674-4557-8f1e-9c3bbda1b48d",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                },
+                                {
+                                    "action": {
+                                        "config": {
+                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
+                                            "openInNewTab": false,
+                                            "useCurrentDateRange": true,
+                                            "useCurrentFilters": true
+                                        },
+                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
+                                        "name": "2. View namespace details"
+                                    },
+                                    "eventId": "421fd374-527f-4368-baf5-00c730daa698",
+                                    "triggers": [
+                                        "VALUE_CLICK_TRIGGER"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "filters": [],
+                    "query": {
+                        "language": "kuery",
+                        "query": ""
+                    },
+                    "syncColors": false,
+                    "syncCursor": true,
+                    "syncTooltips": false,
+                    "title": "ReplicaSets"
+                },
+                "gridData": {
+                    "h": 10,
+                    "i": "v3-workloads-replicasets-table",
+                    "sectionId": "section-other-workloads",
+                    "w": 48,
+                    "x": 0,
+                    "y": 18
+                },
+                "panelIndex": "v3-workloads-replicasets-table",
+                "type": "lens"
+            }
+        ],
+        "sections": [
+            {
+                "collapsed": false,
+                "gridData": {
+                    "i": "section-deploy-metrics",
+                    "y": 2
+                },
+                "title": "Deployments"
+            },
+            {
+                "collapsed": false,
+                "gridData": {
+                    "i": "section-other-workloads",
+                    "y": 3
+                },
+                "title": "Other workload resources"
+            }
+        ],
+        "timeFrom": "now-1h",
+        "timeRestore": true,
+        "timeTo": "now",
+        "title": "[PROD][OTEL][Kubernetes] Workloads"
+    },
+    "coreMigrationVersion": "8.8.0",
+    "created_at": "2026-03-19T14:49:34.915Z",
+    "id": "kubernetes_otel-0b70c6de-4d53-47c4-9844-5f964ba04a6f",
+    "references": [
+        {
+            "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
+            "name": "v2-workloads-alt-nav:link_nav-overview_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-29225f58-cba4-4442-b178-fb5e0a753cf5",
+            "name": "v2-workloads-alt-nav:link_nav-clusters_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-0c88decf-de83-47a4-a5df-0a79dc8daff5",
+            "name": "v2-workloads-alt-nav:link_nav-nodes_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-c0765efe-f172-42c4-a2ea-f4552b6f42dc",
+            "name": "v2-workloads-alt-nav:link_nav-namespaces_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-0b70c6de-4d53-47c4-9844-5f964ba04a6f",
+            "name": "v2-workloads-alt-nav:link_nav-workloads_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v2-workloads-alt-nav:link_nav-pods_dashboard",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "v2-workloads-alt-restart-trend:indexpattern-datasource-layer-4179463d-1ce8-8b21-d9a5-3a00b1f9a05c",
+            "type": "index-pattern"
+        },
+        {
+            "id": "metrics-*",
+            "name": "0864eabf-5198-4270-b84d-7d6bb92e72f6:indexpattern-datasource-layer-6e864d45-9d8c-3cc2-4706-333b17d9e581",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-8cf34def-60de-4bf3-9b06-d4ffc6cb4236",
+            "name": "0864eabf-5198-4270-b84d-7d6bb92e72f6:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:dd-wl-deploy-view-detail:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+            "name": "0864eabf-5198-4270-b84d-7d6bb92e72f6:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:dd-wl-deploy-view-ns:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "v2-workloads-alt-daemonsets-table:indexpattern-datasource-layer-ca3933ee-6754-e4a7-55c9-623fd46f3b75",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v2-workloads-alt-daemonsets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:89f92942-ffe9-4d67-83e9-364fb21da376:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+            "name": "v2-workloads-alt-daemonsets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:0a000001-ds-ns-0000-0000-000000000001:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "v2-workloads-alt-statefulsets-table:indexpattern-datasource-layer-c0cf8466-2257-53c1-bda9-3c4e855c684a",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v2-workloads-alt-statefulsets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:cf22f2de-87bd-4ceb-85bf-01d6d4d8c75f:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+            "name": "v2-workloads-alt-statefulsets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:0a000001-ss-ns-0000-0000-000000000001:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "v2-workloads-alt-jobs-table:indexpattern-datasource-layer-a9c5e41c-623c-b9db-17b1-603e605a8f2c",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v2-workloads-alt-jobs-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:aacd3629-a5e0-486a-8afa-dd361888c0c1:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+            "name": "v2-workloads-alt-jobs-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:0a000001-job-ns-0000-0000-000000000001:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "v3-workloads-replicasets-table:indexpattern-datasource-layer-25f5424a-654d-488f-bea7-ef7a0cd461e7",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
+            "name": "v3-workloads-replicasets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:8ec4f81e-5674-4557-8f1e-9c3bbda1b48d:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+            "name": "v3-workloads-replicasets-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:421fd374-527f-4368-baf5-00c730daa698:dashboardId",
+            "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+            "type": "index-pattern"
+        }
+    ],
+    "type": "dashboard",
+    "typeMigrationVersion": "10.3.0"
+}
