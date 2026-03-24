@@ -3,7 +3,7 @@
   changes:
     - description: Lens to ESQL conversion for the Cluster dashboard. Fix issues with the dashboard.
       type: enhancement
-      link: https://github.com/elastic/integrations/pull/1
+      link: https://github.com/elastic/integrations/pull/18010
 - version: 1.4.0
   changes:
     - description: Add dataset filters to dashboard panels
