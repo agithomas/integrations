@@ -152,7 +152,7 @@
                         "id": "",
                         "params": {
                             "fontSize": 12,
-                            "markdown": "ⓘ  You need to configure `k8s.cluster.name` to see data in this dashboard.\n\n[More information](https://www.google.com)",
+                            "markdown": "\u24d8  You need to configure `k8s.cluster.name` to see data in this dashboard.\n\n[More information](https://www.google.com)",
                             "openLinksInNewTab": false
                         },
                         "title": "",
@@ -182,11 +182,11 @@
                                     "fieldFormats": {},
                                     "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                     "managed": false,
-                                    "name": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "name": "metrics-*.otel*",
                                     "runtimeFieldMap": {},
                                     "sourceFilters": [],
                                     "timeFieldName": "@timestamp",
-                                    "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "title": "metrics-*.otel*",
                                     "type": "esql"
                                 }
                             },
@@ -196,7 +196,7 @@
                                         {
                                             "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "timeField": "@timestamp",
-                                            "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*"
+                                            "title": "metrics-*.otel*"
                                         }
                                     ],
                                     "layers": {
@@ -222,9 +222,9 @@
                                                     }
                                                 },
                                                 {
-                                                    "columnId": "k8s.cluster.name",
+                                                    "columnId": "cluster_name",
                                                     "customLabel": true,
-                                                    "fieldName": "k8s.cluster.name",
+                                                    "fieldName": "cluster_name",
                                                     "label": "Cluster name",
                                                     "meta": {
                                                         "esType": "keyword",
@@ -251,6 +251,44 @@
                                                     }
                                                 },
                                                 {
+                                                    "columnId": "namespaces",
+                                                    "customLabel": true,
+                                                    "fieldName": "namespaces",
+                                                    "inMetricDimension": true,
+                                                    "label": "Namespaces",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    },
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "number",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "pods",
+                                                    "customLabel": true,
+                                                    "fieldName": "pods",
+                                                    "inMetricDimension": true,
+                                                    "label": "Pods",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    },
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "number",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
                                                     "columnId": "d2ad376f-78f3-4ec7-9d82-cdfd61ce6e10",
                                                     "customLabel": true,
                                                     "fieldName": "cpu_util",
@@ -262,7 +300,7 @@
                                                             "id": "number"
                                                         },
                                                         "sourceParams": {
-                                                            "indexPattern": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                                            "indexPattern": "metrics-*.otel*",
                                                             "sourceField": "cpu_util"
                                                         },
                                                         "type": "number"
@@ -288,7 +326,7 @@
                                                             "id": "number"
                                                         },
                                                         "sourceParams": {
-                                                            "indexPattern": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                                            "indexPattern": "metrics-*.otel*",
                                                             "sourceField": "mem_util"
                                                         },
                                                         "type": "number"
@@ -314,7 +352,7 @@
                                                             "id": "number"
                                                         },
                                                         "sourceParams": {
-                                                            "indexPattern": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                                            "indexPattern": "metrics-*.otel*",
                                                             "sourceField": "disk_util"
                                                         },
                                                         "type": "number"
@@ -331,7 +369,7 @@
                                             ],
                                             "index": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "query": {
-                                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 2),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 2)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct)\n  BY k8s.cluster.name"
+                                                "esql": "FROM metrics-*.otel* METADATA _index\n| EVAL cluster_name = COALESCE(k8s.cluster.name, resource.attributes.k8s.cluster.name)\n| WHERE cluster_name IS NOT NULL\n| INLINE STATS namespaces = COUNT_DISTINCT(resource.attributes.k8s.namespace.name), pods = COUNT_DISTINCT(resource.attributes.k8s.pod.uid) BY cluster_name\n| WHERE k8s.node.name IS NOT NULL AND LENGTH(TRIM(k8s.node.name)) > 0\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity),\n    namespaces = MAX(namespaces),\n    pods = MAX(pods)\n  BY cluster_name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 4),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 4)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT_DISTINCT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct),\n    namespaces  = MAX(namespaces),\n    pods        = MAX(pods)\n  BY cluster_name"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -341,7 +379,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 2),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 2)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct)\n  BY k8s.cluster.name"
+                                "esql": "FROM metrics-*.otel* METADATA _index\n| EVAL cluster_name = COALESCE(k8s.cluster.name, resource.attributes.k8s.cluster.name)\n| WHERE cluster_name IS NOT NULL\n| INLINE STATS namespaces = COUNT_DISTINCT(resource.attributes.k8s.namespace.name), pods = COUNT_DISTINCT(resource.attributes.k8s.pod.uid) BY cluster_name\n| WHERE k8s.node.name IS NOT NULL AND LENGTH(TRIM(k8s.node.name)) > 0\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity),\n    namespaces = MAX(namespaces),\n    pods = MAX(pods)\n  BY cluster_name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 4),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 4)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT_DISTINCT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct),\n    namespaces  = MAX(namespaces),\n    pods        = MAX(pods)\n  BY cluster_name"
                             },
                             "visualization": {
                                 "columns": [
@@ -386,11 +424,17 @@
                                         }
                                     },
                                     {
-                                        "columnId": "k8s.cluster.name",
+                                        "columnId": "cluster_name",
                                         "oneClickFilter": true
                                     },
                                     {
                                         "columnId": "nodes"
+                                    },
+                                    {
+                                        "columnId": "namespaces"
+                                    },
+                                    {
+                                        "columnId": "pods"
                                     },
                                     {
                                         "columnId": "d2ad376f-78f3-4ec7-9d82-cdfd61ce6e10",
@@ -424,7 +468,7 @@
                     },
                     "filters": [],
                     "query": {
-                        "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 2),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 2)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct)\n  BY k8s.cluster.name"
+                        "esql": "FROM metrics-*.otel* METADATA _index\n| EVAL cluster_name = COALESCE(k8s.cluster.name, resource.attributes.k8s.cluster.name)\n| WHERE cluster_name IS NOT NULL\n| INLINE STATS namespaces = COUNT_DISTINCT(resource.attributes.k8s.namespace.name), pods = COUNT_DISTINCT(resource.attributes.k8s.pod.uid) BY cluster_name\n| WHERE k8s.node.name IS NOT NULL AND LENGTH(TRIM(k8s.node.name)) > 0\n| STATS\n    node_ready = AVG(k8s.node.condition_ready),\n    cpu_usage  = AVG(k8s.node.cpu.usage),\n    alloc_cpu  = AVG(k8s.node.allocatable_cpu),\n    mem_ws     = AVG(k8s.node.memory.working_set),\n    alloc_mem  = AVG(k8s.node.allocatable_memory),\n    fs_usage   = AVG(k8s.node.filesystem.usage),\n    fs_cap     = AVG(k8s.node.filesystem.capacity),\n    namespaces = MAX(namespaces),\n    pods = MAX(pods)\n  BY cluster_name, k8s.node.name\n| EVAL\n    cpu_pct  = ROUND(cpu_usage / alloc_cpu, 2),\n    mem_pct  = ROUND(TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem), 4),\n    disk_pct = ROUND(TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap), 4)\n| STATS\n    healthy_pct = AVG(node_ready),\n    nodes       = COUNT_DISTINCT(k8s.node.name),\n    cpu_util    = AVG(cpu_pct),\n    mem_util    = AVG(mem_pct),\n    disk_util   = AVG(disk_pct),\n    namespaces  = MAX(namespaces),\n    pods        = MAX(pods)\n  BY cluster_name"
                     },
                     "syncColors": false,
                     "syncCursor": true,
@@ -433,140 +477,11 @@
                 "gridData": {
                     "h": 13,
                     "i": "f2b2579d-ff83-4948-aea2-f71daab2b8cc",
-                    "w": 27,
+                    "w": 43,
                     "x": 5,
                     "y": 2
                 },
                 "panelIndex": "f2b2579d-ff83-4948-aea2-f71daab2b8cc",
-                "type": "lens"
-            },
-            {
-                "embeddableConfig": {
-                    "attributes": {
-                        "references": [],
-                        "state": {
-                            "adHocDataViews": {
-                                "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3": {
-                                    "allowHidden": false,
-                                    "allowNoIndex": false,
-                                    "fieldFormats": {},
-                                    "id": "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3",
-                                    "managed": false,
-                                    "name": "metrics-k8sclusterreceiver.otel-*",
-                                    "runtimeFieldMap": {},
-                                    "sourceFilters": [],
-                                    "timeFieldName": "@timestamp",
-                                    "title": "metrics-k8sclusterreceiver.otel-*",
-                                    "type": "esql"
-                                }
-                            },
-                            "datasourceStates": {
-                                "textBased": {
-                                    "indexPatternRefs": [
-                                        {
-                                            "id": "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3",
-                                            "timeField": "@timestamp",
-                                            "title": "metrics-k8sclusterreceiver.otel-*"
-                                        }
-                                    ],
-                                    "layers": {
-                                        "baf3c0a4-2d6c-43d1-ad2d-dd6441de8a79": {
-                                            "columns": [
-                                                {
-                                                    "columnId": "namespaces",
-                                                    "customLabel": true,
-                                                    "fieldName": "namespaces",
-                                                    "inMetricDimension": true,
-                                                    "label": "Namespace",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    },
-                                                    "params": {
-                                                        "format": {
-                                                            "id": "number",
-                                                            "params": {
-                                                                "decimals": 0
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "columnId": "resource.attributes.k8s.cluster.name",
-                                                    "customLabel": true,
-                                                    "fieldName": "resource.attributes.k8s.cluster.name",
-                                                    "label": "Cluster",
-                                                    "meta": {
-                                                        "esType": "keyword",
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                {
-                                                    "columnId": "pods",
-                                                    "customLabel": true,
-                                                    "fieldName": "pods",
-                                                    "inMetricDimension": true,
-                                                    "label": "Pods",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    },
-                                                    "params": {
-                                                        "format": {
-                                                            "id": "number",
-                                                            "params": {
-                                                                "decimals": 0
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ],
-                                            "index": "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3",
-                                            "query": {
-                                                "esql": "FROM metrics-k8sclusterreceiver.otel-*\n| WHERE resource.attributes.k8s.cluster.name IS NOT NULL\n| STATS\n    namespaces = COUNT_DISTINCT(resource.attributes.k8s.namespace.name),\n    pods       = COUNT_DISTINCT(resource.attributes.k8s.pod.uid)\n  BY resource.attributes.k8s.cluster.name"
-                                            },
-                                            "timeField": "@timestamp"
-                                        }
-                                    }
-                                }
-                            },
-                            "filters": [],
-                            "needsRefresh": false,
-                            "query": {
-                                "esql": "FROM metrics-k8sclusterreceiver.otel-*\n| WHERE resource.attributes.k8s.cluster.name IS NOT NULL\n| STATS\n    namespaces = COUNT_DISTINCT(resource.attributes.k8s.namespace.name),\n    pods       = COUNT_DISTINCT(resource.attributes.k8s.pod.uid)\n  BY resource.attributes.k8s.cluster.name"
-                            },
-                            "visualization": {
-                                "columns": [
-                                    {
-                                        "columnId": "namespaces"
-                                    },
-                                    {
-                                        "columnId": "resource.attributes.k8s.cluster.name",
-                                        "oneClickFilter": true
-                                    },
-                                    {
-                                        "columnId": "pods"
-                                    }
-                                ],
-                                "layerId": "baf3c0a4-2d6c-43d1-ad2d-dd6441de8a79",
-                                "layerType": "data",
-                                "showRowNumbers": true
-                            }
-                        },
-                        "title": "",
-                        "version": 2,
-                        "visualizationType": "lnsDatatable"
-                    },
-                    "title": ""
-                },
-                "gridData": {
-                    "h": 13,
-                    "i": "fd78738f-0cf4-40ac-992a-cc47b9e788da",
-                    "w": 16,
-                    "x": 32,
-                    "y": 2
-                },
-                "panelIndex": "fd78738f-0cf4-40ac-992a-cc47b9e788da",
                 "type": "lens"
             },
             {
@@ -711,7 +626,7 @@
                                                 }
                                             ],
                                             "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    healthy_count = COUNT(*) WHERE health_status == \"healthy\",\n    total_count = COUNT(*)\n"
+                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready > 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes < total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    healthy_count = COUNT(*) WHERE health_status == \"healthy\",\n    total_count = COUNT(*)\n"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -790,7 +705,7 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "description": "Clusters where all nodes are ready. Healthy = every node has condition_ready \u003e 0."
+                    "description": "Clusters where all nodes are ready. Healthy = every node has condition_ready > 0."
                 },
                 "gridData": {
                     "h": 4,
@@ -841,7 +756,7 @@
                                                 }
                                             ],
                                             "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready \u003e 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes \u003c total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    unhealthy_count = COUNT(*) WHERE health_status == \"unhealthy\",\n    total_count = COUNT(*)\n"
+                                                "esql": "FROM metrics-*\n| WHERE k8s.cluster.name IS NOT NULL\n  AND k8s.node.name IS NOT NULL\n  AND k8s.node.condition_ready IS NOT NULL\n| STATS\n    total_nodes = COUNT_DISTINCT(k8s.node.name),\n    ready_nodes = COUNT_DISTINCT(k8s.node.name) WHERE k8s.node.condition_ready > 0\n  BY k8s.cluster.name\n| EVAL health_status = CASE(ready_nodes < total_nodes, \"unhealthy\", \"healthy\")\n| STATS\n    unhealthy_count = COUNT(*) WHERE health_status == \"unhealthy\",\n    total_count = COUNT(*)\n"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1026,7 +941,7 @@
                                             ],
                                             "index": "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3",
                                             "query": {
-                                                "esql": "TS metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.pod.uid IS NOT NULL\n| STATS phase = MAX(k8s.pod.phase)\n  BY k8s.cluster.name, k8s.pod.uid,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL is_unhealthy = CASE(\n    phase == 1, 1,\n    phase \u003e= 4, 1,\n    0)\n| STATS unhealthy_pods = SUM(is_unhealthy)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.pod.uid IS NOT NULL\n| STATS phase = MAX(k8s.pod.phase)\n  BY k8s.cluster.name, k8s.pod.uid,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL is_unhealthy = CASE(\n    phase == 1, 1,\n    phase >= 4, 1,\n    0)\n| STATS unhealthy_pods = SUM(is_unhealthy)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1036,7 +951,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.pod.uid IS NOT NULL\n| STATS phase = MAX(k8s.pod.phase)\n  BY k8s.cluster.name, k8s.pod.uid,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL is_unhealthy = CASE(\n    phase == 1, 1,\n    phase \u003e= 4, 1,\n    0)\n| STATS unhealthy_pods = SUM(is_unhealthy)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.pod.uid IS NOT NULL\n| STATS phase = MAX(k8s.pod.phase)\n  BY k8s.cluster.name, k8s.pod.uid,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL is_unhealthy = CASE(\n    phase == 1, 1,\n    phase >= 4, 1,\n    0)\n| STATS unhealthy_pods = SUM(is_unhealthy)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                             },
                             "visualization": {
                                 "axisTitlesVisibilitySettings": {
@@ -1221,7 +1136,7 @@
                                             ],
                                             "index": "e5f06c52b3bd1edcb07a3d4b79333e5b4c9e3eeb578573940c2599ffcc4a1ac3",
                                             "query": {
-                                                "esql": "TS metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS\n    desired = MAX(TO_DOUBLE(k8s.deployment.desired)),\n    available = MAX(TO_DOUBLE(k8s.deployment.available))\n  BY\n    k8s.cluster.name,\n    k8s.deployment.name,\n    k8s.namespace.name,\n    time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| STATS\n    sum_desired = SUM(desired),\n    sum_available = SUM(available),\n    pod_delta = SUM(desired) - SUM(available)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS\n    desired = MAX(TO_DOUBLE(k8s.deployment.desired)),\n    available = MAX(TO_DOUBLE(k8s.deployment.available))\n  BY\n    k8s.cluster.name,\n    k8s.deployment.name,\n    k8s.namespace.name,\n    time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| STATS\n    sum_desired = SUM(desired),\n    sum_available = SUM(available),\n    pod_delta = SUM(desired) - SUM(available)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1231,7 +1146,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS\n    desired = MAX(TO_DOUBLE(k8s.deployment.desired)),\n    available = MAX(TO_DOUBLE(k8s.deployment.available))\n  BY\n    k8s.cluster.name,\n    k8s.deployment.name,\n    k8s.namespace.name,\n    time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| STATS\n    sum_desired = SUM(desired),\n    sum_available = SUM(available),\n    pod_delta = SUM(desired) - SUM(available)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS\n    desired = MAX(TO_DOUBLE(k8s.deployment.desired)),\n    available = MAX(TO_DOUBLE(k8s.deployment.available))\n  BY\n    k8s.cluster.name,\n    k8s.deployment.name,\n    k8s.namespace.name,\n    time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| STATS\n    sum_desired = SUM(desired),\n    sum_available = SUM(available),\n    pod_delta = SUM(desired) - SUM(available)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                             },
                             "visualization": {
                                 "axisTitlesVisibilitySettings": {
@@ -1328,11 +1243,11 @@
                                     "fieldFormats": {},
                                     "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                     "managed": false,
-                                    "name": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "name": "metrics-*.otel*",
                                     "runtimeFieldMap": {},
                                     "sourceFilters": [],
                                     "timeFieldName": "@timestamp",
-                                    "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "title": "metrics-*.otel*",
                                     "type": "esql"
                                 }
                             },
@@ -1342,7 +1257,7 @@
                                         {
                                             "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "timeField": "@timestamp",
-                                            "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*"
+                                            "title": "metrics-*.otel*"
                                         }
                                     ],
                                     "layers": {
@@ -1409,7 +1324,7 @@
                                             ],
                                             "index": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "query": {
-                                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    cpu_usage = AVG(k8s.node.cpu.usage),\n    alloc_cpu = AVG(k8s.node.allocatable_cpu)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL cpu_pct = cpu_usage / alloc_cpu\n| STATS cpu_util = AVG(cpu_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    cpu_usage = AVG(k8s.node.cpu.usage),\n    alloc_cpu = AVG(k8s.node.allocatable_cpu)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL cpu_pct = cpu_usage / alloc_cpu\n| STATS cpu_util = AVG(cpu_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1419,7 +1334,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    cpu_usage = AVG(k8s.node.cpu.usage),\n    alloc_cpu = AVG(k8s.node.allocatable_cpu)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL cpu_pct = cpu_usage / alloc_cpu\n| STATS cpu_util = AVG(cpu_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    cpu_usage = AVG(k8s.node.cpu.usage),\n    alloc_cpu = AVG(k8s.node.allocatable_cpu)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL cpu_pct = cpu_usage / alloc_cpu\n| STATS cpu_util = AVG(cpu_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                             },
                             "visualization": {
                                 "axisTitlesVisibilitySettings": {
@@ -1517,11 +1432,11 @@
                                     "fieldFormats": {},
                                     "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                     "managed": false,
-                                    "name": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "name": "metrics-*.otel*",
                                     "runtimeFieldMap": {},
                                     "sourceFilters": [],
                                     "timeFieldName": "@timestamp",
-                                    "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "title": "metrics-*.otel*",
                                     "type": "esql"
                                 }
                             },
@@ -1531,7 +1446,7 @@
                                         {
                                             "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "timeField": "@timestamp",
-                                            "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*"
+                                            "title": "metrics-*.otel*"
                                         }
                                     ],
                                     "layers": {
@@ -1598,7 +1513,7 @@
                                             ],
                                             "index": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "query": {
-                                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    mem_ws    = AVG(k8s.node.memory.working_set),\n    alloc_mem = AVG(k8s.node.allocatable_memory)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL mem_pct = TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem)\n| STATS mem_util = AVG(mem_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    mem_ws    = AVG(k8s.node.memory.working_set),\n    alloc_mem = AVG(k8s.node.allocatable_memory)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL mem_pct = TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem)\n| STATS mem_util = AVG(mem_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1608,7 +1523,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    mem_ws    = AVG(k8s.node.memory.working_set),\n    alloc_mem = AVG(k8s.node.allocatable_memory)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL mem_pct = TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem)\n| STATS mem_util = AVG(mem_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    mem_ws    = AVG(k8s.node.memory.working_set),\n    alloc_mem = AVG(k8s.node.allocatable_memory)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL mem_pct = TO_DOUBLE(mem_ws) / TO_DOUBLE(alloc_mem)\n| STATS mem_util = AVG(mem_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                             },
                             "visualization": {
                                 "axisTitlesVisibilitySettings": {
@@ -1787,7 +1702,7 @@
                                             ],
                                             "index": "c939011510bd38ce97144280e9fb6398f12e93be8321360479a2c467d6122e82",
                                             "query": {
-                                                "esql": "TS metrics-kubeletstatsreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    fs_usage = AVG(k8s.node.filesystem.usage),\n    fs_cap   = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL disk_pct = TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap)\n| STATS disk_util = AVG(disk_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    fs_usage = AVG(k8s.node.filesystem.usage),\n    fs_cap   = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL disk_pct = TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap)\n| STATS disk_util = AVG(disk_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -1797,7 +1712,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "TS metrics-kubeletstatsreceiver.otel-*\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    fs_usage = AVG(k8s.node.filesystem.usage),\n    fs_cap   = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL disk_pct = TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap)\n| STATS disk_util = AVG(disk_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
+                                "esql": "TS metrics-*.otel* METADATA _index\n| WHERE k8s.cluster.name IS NOT NULL\n| WHERE k8s.node.name IS NOT NULL\n| STATS\n    fs_usage = AVG(k8s.node.filesystem.usage),\n    fs_cap   = AVG(k8s.node.filesystem.capacity)\n  BY k8s.cluster.name, k8s.node.name,\n     time_bucket = BUCKET(@timestamp, 20, ?_tstart, ?_tend)\n| EVAL disk_pct = TO_DOUBLE(fs_usage) / TO_DOUBLE(fs_cap)\n| STATS disk_util = AVG(disk_pct)\n  BY k8s.cluster.name, time_bucket\n| SORT time_bucket ASC"
                             },
                             "visualization": {
                                 "axisTitlesVisibilitySettings": {
@@ -1903,11 +1818,6 @@
     "created_at": "2026-03-24T10:50:26.712Z",
     "id": "kubernetes_otel-29225f58-cba4-4442-b178-fb5e0a753cf5",
     "references": [
-        {
-            "id": "kubernetes_otel-fleet-shared-tag-kubernetes_otel-dfd505f6-fc02-5c53-adc7-148425d7972c-default",
-            "name": "tag-ref-fleet-shared-tag-kubernetes_otel-dfd505f6-fc02-5c53-adc7-148425d7972c-default",
-            "type": "tag"
-        },
         {
             "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
             "name": "v3-cl-nav:link_nav-overview_dashboard",
