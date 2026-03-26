@@ -1,32 +1,15 @@
 {
     "attributes": {
-        "controlGroupInput": {
-            "chainingSystem": "HIERARCHICAL",
-            "controlStyle": "oneLine",
-            "ignoreParentSettingsJSON": {
-                "ignoreFilters": false,
-                "ignoreQuery": false,
-                "ignoreTimerange": false,
-                "ignoreValidations": false
-            },
-            "panelsJSON": {},
-            "showApplySelections": false
-        },
         "description": "Single deployment deep dive with replica availability, pod resource usage, container restart trends, and network I/O.",
         "kibanaSavedObjectMeta": {
             "searchSourceJSON": {
                 "filter": [
                     {
-                        "$state": {
-                            "store": "appState"
-                        },
                         "meta": {
-                            "alias": null,
                             "disabled": false,
                             "field": "data_stream.dataset",
                             "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
                             "key": "data_stream.dataset",
-                            "negate": false,
                             "params": [
                                 "kubeletstatsreceiver.otel",
                                 "k8sclusterreceiver.otel"
@@ -59,6 +42,8 @@
             }
         },
         "optionsJSON": {
+            "autoApplyFilters": true,
+            "hidePanelBorders": false,
             "hidePanelTitles": false,
             "syncColors": false,
             "syncCursor": true,
@@ -69,19 +54,17 @@
             {
                 "embeddableConfig": {
                     "description": "",
-                    "hidePanelTitles": true,
+                    "hide_title": true,
                     "layout": "horizontal",
                     "links": [
                         {
-                            "destinationRefName": "link_06168fab-bbb4-4943-a558-b4ce7f3ab305_dashboard",
-                            "id": "06168fab-bbb4-4943-a558-b4ce7f3ab305",
-                            "label": "\u003c Overview",
+                            "destinationRefName": "link_15edc67e-f4d5-40fa-a88f-123d9acb6911_dashboard",
+                            "label": "< Overview",
                             "options": {
-                                "openInNewTab": false,
-                                "useCurrentDateRange": true,
-                                "useCurrentFilters": false
+                                "open_in_new_tab": false,
+                                "use_filters": false,
+                                "use_time_range": true
                             },
-                            "order": 0,
                             "type": "dashboardLink"
                         }
                     ]
@@ -164,19 +147,7 @@
                         "type": "lens",
                         "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS name = MAX(k8s.deployment.name)\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    }
                 },
                 "gridData": {
                     "h": 3,
@@ -198,35 +169,35 @@
                                 "textBased": {
                                     "indexPatternRefs": [],
                                     "layers": {
-                                        "0b0d242c-566c-9ec0-60cd-826f4be37481": {
+                                        "85a8526a-d0f3-42e9-97a8-caa72c6c6e89": {
                                             "allColumns": [
                                                 {
-                                                    "columnId": "c7f73801-90bf-8874-6221-73fd6e0566d3",
+                                                    "columnId": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
                                                     "customLabel": true,
-                                                    "fieldName": "available",
+                                                    "fieldName": "created_str",
                                                     "inMetricDimension": true,
-                                                    "label": "Available",
+                                                    "label": "Created on",
                                                     "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
+                                                        "esType": "keyword",
+                                                        "type": "keyword"
                                                     }
                                                 }
                                             ],
                                             "columns": [
                                                 {
-                                                    "columnId": "c7f73801-90bf-8874-6221-73fd6e0566d3",
+                                                    "columnId": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
                                                     "customLabel": true,
-                                                    "fieldName": "available",
+                                                    "fieldName": "created_str",
                                                     "inMetricDimension": true,
-                                                    "label": "Available replicas",
+                                                    "label": "Created on",
                                                     "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
+                                                        "esType": "keyword",
+                                                        "type": "keyword"
                                                     }
                                                 }
                                             ],
                                             "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS available = MAX(k8s.deployment.available)\n"
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name), created = MIN(@timestamp)\n| EVAL created_str = CASE(count == 1, DATE_FORMAT(\"MMM dd, yyyy\", created), \"N/A\")\n| KEEP created_str"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -236,350 +207,35 @@
                             "filters": [],
                             "internalReferences": [],
                             "query": {
-                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS available = MAX(k8s.deployment.available)\n"
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name), created = MIN(@timestamp)\n| EVAL created_str = CASE(count == 1, DATE_FORMAT(\"MMM dd, yyyy\", created), \"N/A\")\n| KEEP created_str"
                             },
                             "visualization": {
-                                "applyColorTo": "background",
-                                "colorMode": "background",
-                                "layerId": "0b0d242c-566c-9ec0-60cd-826f4be37481",
+                                "colorMode": "none",
+                                "layerId": "85a8526a-d0f3-42e9-97a8-caa72c6c6e89",
                                 "layerType": "data",
-                                "metricAccessor": "c7f73801-90bf-8874-6221-73fd6e0566d3",
-                                "palette": {
-                                    "name": "custom",
-                                    "params": {
-                                        "colorStops": [
-                                            {
-                                                "color": "#BFDBFF",
-                                                "stop": 0
-                                            },
-                                            {
-                                                "color": "#24C292",
-                                                "stop": 1
-                                            }
-                                        ],
-                                        "continuity": "above",
-                                        "maxSteps": 5,
-                                        "name": "custom",
-                                        "progression": "fixed",
-                                        "rangeMax": null,
-                                        "rangeMin": 0,
-                                        "rangeType": "number",
-                                        "reverse": false,
-                                        "steps": 3,
-                                        "stops": [
-                                            {
-                                                "color": "#BFDBFF",
-                                                "stop": 1
-                                            },
-                                            {
-                                                "color": "#24C292",
-                                                "stop": 2
-                                            }
-                                        ]
-                                    },
-                                    "type": "palette"
-                                },
-                                "showBar": false
+                                "metricAccessor": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
+                                "primaryAlign": "left",
+                                "showBar": false,
+                                "titleWeight": "normal",
+                                "titlesTextSize": "xxs",
+                                "valueFontMode": "fit",
+                                "valuesTextSize": "xs"
                             }
                         },
                         "title": "",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "description": "Available replicas for this deployment. MAX(k8s.deployment.available).",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS available = MAX(k8s.deployment.available)\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    }
                 },
                 "gridData": {
-                    "h": 4,
-                    "i": "v2-deploy-detail-available",
-                    "w": 12,
-                    "x": 0,
-                    "y": 3
-                },
-                "panelIndex": "v2-deploy-detail-available",
-                "type": "lens"
-            },
-            {
-                "embeddableConfig": {
-                    "attributes": {
-                        "references": [],
-                        "state": {
-                            "adHocDataViews": {},
-                            "datasourceStates": {
-                                "textBased": {
-                                    "indexPatternRefs": [],
-                                    "layers": {
-                                        "c5786785-92b9-d1a2-111a-dd75d9ba7934": {
-                                            "allColumns": [
-                                                {
-                                                    "columnId": "7138585c-d40c-b657-cf06-816942450421",
-                                                    "customLabel": true,
-                                                    "fieldName": "desired",
-                                                    "inMetricDimension": true,
-                                                    "label": "Desired",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "columns": [
-                                                {
-                                                    "columnId": "7138585c-d40c-b657-cf06-816942450421",
-                                                    "customLabel": true,
-                                                    "fieldName": "desired",
-                                                    "inMetricDimension": true,
-                                                    "label": "Desired replicas",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.desired IS NOT NULL\n| STATS desired = MAX(k8s.deployment.desired)\n"
-                                            },
-                                            "timeField": "@timestamp"
-                                        }
-                                    }
-                                }
-                            },
-                            "filters": [],
-                            "internalReferences": [],
-                            "query": {
-                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.desired IS NOT NULL\n| STATS desired = MAX(k8s.deployment.desired)\n"
-                            },
-                            "visualization": {
-                                "applyColorTo": "background",
-                                "color": "#61A2FF",
-                                "colorMode": "background",
-                                "layerId": "c5786785-92b9-d1a2-111a-dd75d9ba7934",
-                                "layerType": "data",
-                                "metricAccessor": "7138585c-d40c-b657-cf06-816942450421",
-                                "showBar": false
-                            }
-                        },
-                        "title": "",
-                        "type": "lens",
-                        "version": 1,
-                        "visualizationType": "lnsMetric"
-                    },
-                    "description": "Desired replicas for this deployment. MAX(k8s.deployment.desired).",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.desired IS NOT NULL\n| STATS desired = MAX(k8s.deployment.desired)\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
-                },
-                "gridData": {
-                    "h": 4,
-                    "i": "v2-deploy-detail-desired",
-                    "w": 12,
-                    "x": 12,
-                    "y": 3
-                },
-                "panelIndex": "v2-deploy-detail-desired",
-                "type": "lens"
-            },
-            {
-                "embeddableConfig": {
-                    "attributes": {
-                        "references": [],
-                        "state": {
-                            "adHocDataViews": {},
-                            "datasourceStates": {
-                                "textBased": {
-                                    "indexPatternRefs": [],
-                                    "layers": {
-                                        "48bf04fd-0ec2-9a2b-b498-bad9c61750cb": {
-                                            "allColumns": [
-                                                {
-                                                    "columnId": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
-                                                    "customLabel": true,
-                                                    "fieldName": "pod_count",
-                                                    "inMetricDimension": true,
-                                                    "label": "Pods",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "columns": [
-                                                {
-                                                    "columnId": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
-                                                    "customLabel": true,
-                                                    "fieldName": "pod_count",
-                                                    "inMetricDimension": true,
-                                                    "label": "Pods in deployment",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n| STATS pod_count = COUNT_DISTINCT(k8s.pod.uid)\n"
-                                            },
-                                            "timeField": "@timestamp"
-                                        }
-                                    }
-                                }
-                            },
-                            "filters": [],
-                            "internalReferences": [],
-                            "query": {
-                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n| STATS pod_count = COUNT_DISTINCT(k8s.pod.uid)\n"
-                            },
-                            "visualization": {
-                                "applyColorTo": "background",
-                                "color": "#61A2FF",
-                                "colorMode": "background",
-                                "layerId": "48bf04fd-0ec2-9a2b-b498-bad9c61750cb",
-                                "layerType": "data",
-                                "metricAccessor": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
-                                "showBar": false
-                            }
-                        },
-                        "title": "",
-                        "type": "lens",
-                        "version": 1,
-                        "visualizationType": "lnsMetric"
-                    },
-                    "description": "Pod count for this deployment. COUNT_DISTINCT(k8s.pod.uid).",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n| STATS pod_count = COUNT_DISTINCT(k8s.pod.uid)\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
-                },
-                "gridData": {
-                    "h": 4,
-                    "i": "v2-deploy-detail-pods",
-                    "w": 12,
+                    "h": 3,
+                    "i": "v3-wd-header-created",
+                    "w": 17,
                     "x": 24,
-                    "y": 3
+                    "y": 0
                 },
-                "panelIndex": "v2-deploy-detail-pods",
-                "type": "lens"
-            },
-            {
-                "embeddableConfig": {
-                    "attributes": {
-                        "references": [],
-                        "state": {
-                            "adHocDataViews": {},
-                            "datasourceStates": {
-                                "textBased": {
-                                    "layers": {
-                                        "b8e82f89-e3b7-c30e-2126-19983e1fe23b": {
-                                            "allColumns": [
-                                                {
-                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
-                                                    "customLabel": true,
-                                                    "fieldName": "total_restarts",
-                                                    "inMetricDimension": true,
-                                                    "label": "Container restarts",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "columns": [
-                                                {
-                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
-                                                    "customLabel": true,
-                                                    "fieldName": "total_restarts",
-                                                    "inMetricDimension": true,
-                                                    "label": "Container restarts",
-                                                    "meta": {
-                                                        "esType": "long",
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            ],
-                                            "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
-                                            },
-                                            "timeField": "@timestamp"
-                                        }
-                                    }
-                                }
-                            },
-                            "filters": [],
-                            "internalReferences": [],
-                            "query": {
-                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
-                            },
-                            "visualization": {
-                                "applyColorTo": "background",
-                                "color": "#F6726A",
-                                "colorMode": "background",
-                                "layerId": "b8e82f89-e3b7-c30e-2126-19983e1fe23b",
-                                "layerType": "data",
-                                "metricAccessor": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
-                                "showBar": false
-                            }
-                        },
-                        "title": "",
-                        "type": "lens",
-                        "version": 1,
-                        "visualizationType": "lnsMetric"
-                    },
-                    "description": "Total container restarts. MAX(k8s.container.restarts) per pod+container, then SUM.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
-                },
-                "gridData": {
-                    "h": 4,
-                    "i": "v2-deploy-detail-restarts",
-                    "w": 12,
-                    "x": 36,
-                    "y": 3
-                },
-                "panelIndex": "v2-deploy-detail-restarts",
+                "panelIndex": "v3-wd-header-created",
                 "type": "lens"
             },
             {
@@ -680,40 +336,21 @@
                             }
                         },
                         "title": "",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsMetric"
                     },
                     "description": "Click to view deployment logs (opens a new tab)",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": [
-                                {
-                                    "action": {
-                                        "config": {
-                                            "openInNewTab": true,
-                                            "url": {
-                                                "template": "{{kibanaUrl}}/app/discover#/?_g=(time:(from:'{{context.panel.timeRange.from}}',to:'{{context.panel.timeRange.to}}'))\u0026_a=(dataSource:(dataViewId:'logs-*',type:dataView),query:(language:kuery,query:'k8s.deployment.name:\"{{event.value}}\"'))"
-                                            }
-                                        },
-                                        "factoryId": "URL_DRILLDOWN",
-                                        "name": "View logs in Discover"
-                                    },
-                                    "eventId": "1c6a8727-98de-4e22-9c05-6cc7381824ce",
-                                    "triggers": [
-                                        "VALUE_CLICK_TRIGGER"
-                                    ]
-                                }
-                            ]
+                    "drilldowns": [
+                        {
+                            "encode_url": true,
+                            "label": "View logs in Discover",
+                            "open_in_new_tab": true,
+                            "trigger": "on_click_value",
+                            "type": "url_drilldown",
+                            "url": "{{kibanaUrl}}/app/discover#/?_g=(time:(from:'{{context.panel.timeRange.from}}',to:'{{context.panel.timeRange.to}}'))&_a=(dataSource:(dataViewId:'logs-*',type:dataView),query:(language:kuery,query:'k8s.deployment.name:\"{{event.value}}\"'))"
                         }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| KEEP k8s.deployment.name\n| LIMIT 1"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    ],
+                    "hide_title": true
                 },
                 "gridData": {
                     "h": 3,
@@ -735,35 +372,35 @@
                                 "textBased": {
                                     "indexPatternRefs": [],
                                     "layers": {
-                                        "85a8526a-d0f3-42e9-97a8-caa72c6c6e89": {
+                                        "0b0d242c-566c-9ec0-60cd-826f4be37481": {
                                             "allColumns": [
                                                 {
-                                                    "columnId": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
+                                                    "columnId": "c7f73801-90bf-8874-6221-73fd6e0566d3",
                                                     "customLabel": true,
-                                                    "fieldName": "created_str",
+                                                    "fieldName": "available",
                                                     "inMetricDimension": true,
-                                                    "label": "Created on",
+                                                    "label": "Available",
                                                     "meta": {
-                                                        "esType": "keyword",
-                                                        "type": "keyword"
+                                                        "esType": "long",
+                                                        "type": "number"
                                                     }
                                                 }
                                             ],
                                             "columns": [
                                                 {
-                                                    "columnId": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
+                                                    "columnId": "c7f73801-90bf-8874-6221-73fd6e0566d3",
                                                     "customLabel": true,
-                                                    "fieldName": "created_str",
+                                                    "fieldName": "available",
                                                     "inMetricDimension": true,
-                                                    "label": "Created on",
+                                                    "label": "Available replicas",
                                                     "meta": {
-                                                        "esType": "keyword",
-                                                        "type": "keyword"
+                                                        "esType": "long",
+                                                        "type": "number"
                                                     }
                                                 }
                                             ],
                                             "query": {
-                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name), created = MIN(@timestamp)\n| EVAL created_str = CASE(count == 1, DATE_FORMAT(\"MMM dd, yyyy\", created), \"N/A\")\n| KEEP created_str"
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS available = MAX(k8s.deployment.available)\n"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -773,19 +410,50 @@
                             "filters": [],
                             "internalReferences": [],
                             "query": {
-                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS count = COUNT_DISTINCT(k8s.deployment.name), created = MIN(@timestamp)\n| EVAL created_str = CASE(count == 1, DATE_FORMAT(\"MMM dd, yyyy\", created), \"N/A\")\n| KEEP created_str"
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.available IS NOT NULL\n| STATS available = MAX(k8s.deployment.available)\n"
                             },
                             "visualization": {
-                                "colorMode": "none",
-                                "layerId": "85a8526a-d0f3-42e9-97a8-caa72c6c6e89",
+                                "applyColorTo": "background",
+                                "colorMode": "background",
+                                "layerId": "0b0d242c-566c-9ec0-60cd-826f4be37481",
                                 "layerType": "data",
-                                "metricAccessor": "432e5bfb-4f7c-40d5-9a0c-8a90ab0aa43e",
-                                "primaryAlign": "left",
-                                "showBar": false,
-                                "titleWeight": "normal",
-                                "titlesTextSize": "xxs",
-                                "valueFontMode": "fit",
-                                "valuesTextSize": "xs"
+                                "metricAccessor": "c7f73801-90bf-8874-6221-73fd6e0566d3",
+                                "palette": {
+                                    "name": "custom",
+                                    "params": {
+                                        "colorStops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": 0
+                                            },
+                                            {
+                                                "color": "#24C292",
+                                                "stop": 1
+                                            }
+                                        ],
+                                        "continuity": "above",
+                                        "maxSteps": 5,
+                                        "name": "custom",
+                                        "progression": "fixed",
+                                        "rangeMax": null,
+                                        "rangeMin": 0,
+                                        "rangeType": "number",
+                                        "reverse": false,
+                                        "steps": 3,
+                                        "stops": [
+                                            {
+                                                "color": "#BFDBFF",
+                                                "stop": 1
+                                            },
+                                            {
+                                                "color": "#24C292",
+                                                "stop": 2
+                                            }
+                                        ]
+                                    },
+                                    "type": "palette"
+                                },
+                                "showBar": false
                             }
                         },
                         "title": "",
@@ -793,27 +461,250 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n| STATS created = MIN(@timestamp)\n| EVAL created_str = DATE_FORMAT(\"MMM dd, yyyy\", created)\n| KEEP created_str\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "description": "Available replicas for this deployment. MAX(k8s.deployment.available).",
+                    "hide_title": true
                 },
                 "gridData": {
-                    "h": 3,
-                    "i": "v3-wd-header-created",
-                    "w": 17,
-                    "x": 24,
-                    "y": 0
+                    "h": 4,
+                    "i": "v2-deploy-detail-available",
+                    "w": 12,
+                    "x": 0,
+                    "y": 3
                 },
-                "panelIndex": "v3-wd-header-created",
+                "panelIndex": "v2-deploy-detail-available",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "c5786785-92b9-d1a2-111a-dd75d9ba7934": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "7138585c-d40c-b657-cf06-816942450421",
+                                                    "customLabel": true,
+                                                    "fieldName": "desired",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "7138585c-d40c-b657-cf06-816942450421",
+                                                    "customLabel": true,
+                                                    "fieldName": "desired",
+                                                    "inMetricDimension": true,
+                                                    "label": "Desired replicas",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.desired IS NOT NULL\n| STATS desired = MAX(k8s.deployment.desired)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.deployment.desired IS NOT NULL\n| STATS desired = MAX(k8s.deployment.desired)\n"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "color": "#61A2FF",
+                                "colorMode": "background",
+                                "layerId": "c5786785-92b9-d1a2-111a-dd75d9ba7934",
+                                "layerType": "data",
+                                "metricAccessor": "7138585c-d40c-b657-cf06-816942450421",
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Desired replicas for this deployment. MAX(k8s.deployment.desired).",
+                    "hide_title": true
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "v2-deploy-detail-desired",
+                    "w": 12,
+                    "x": 12,
+                    "y": 3
+                },
+                "panelIndex": "v2-deploy-detail-desired",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [],
+                                    "layers": {
+                                        "48bf04fd-0ec2-9a2b-b498-bad9c61750cb": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
+                                                    "customLabel": true,
+                                                    "fieldName": "pod_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Pods",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
+                                                    "customLabel": true,
+                                                    "fieldName": "pod_count",
+                                                    "inMetricDimension": true,
+                                                    "label": "Pods in deployment",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n| STATS pod_count = COUNT_DISTINCT(k8s.pod.uid)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n| STATS pod_count = COUNT_DISTINCT(k8s.pod.uid)\n"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "color": "#61A2FF",
+                                "colorMode": "background",
+                                "layerId": "48bf04fd-0ec2-9a2b-b498-bad9c61750cb",
+                                "layerType": "data",
+                                "metricAccessor": "602bb36a-b2d9-5e22-bbe6-6f8321bf6cf4",
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Pod count for this deployment. COUNT_DISTINCT(k8s.pod.uid).",
+                    "hide_title": true
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "v2-deploy-detail-pods",
+                    "w": 12,
+                    "x": 24,
+                    "y": 3
+                },
+                "panelIndex": "v2-deploy-detail-pods",
+                "type": "lens"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "textBased": {
+                                    "layers": {
+                                        "b8e82f89-e3b7-c30e-2126-19983e1fe23b": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "Container restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                                    "customLabel": true,
+                                                    "fieldName": "total_restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "Container restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "query": {
+                                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.restarts IS NOT NULL\n  AND k8s.pod.uid IS NOT NULL\n  AND k8s.container.name IS NOT NULL\n| STATS max_restarts = MAX(k8s.container.restarts) BY k8s.pod.uid, k8s.container.name\n| STATS total_restarts = SUM(max_restarts)\n"
+                            },
+                            "visualization": {
+                                "applyColorTo": "background",
+                                "color": "#F6726A",
+                                "colorMode": "background",
+                                "layerId": "b8e82f89-e3b7-c30e-2126-19983e1fe23b",
+                                "layerType": "data",
+                                "metricAccessor": "04502b61-dc7e-1c36-d570-d3e1b897a44d",
+                                "showBar": false
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "version": 2,
+                        "visualizationType": "lnsMetric"
+                    },
+                    "description": "Total container restarts. MAX(k8s.container.restarts) per pod+container, then SUM.",
+                    "hide_title": true
+                },
+                "gridData": {
+                    "h": 4,
+                    "i": "v2-deploy-detail-restarts",
+                    "w": 12,
+                    "x": 36,
+                    "y": 3
+                },
+                "panelIndex": "v2-deploy-detail-restarts",
                 "type": "lens"
             },
             {
@@ -961,19 +852,7 @@
                         "visualizationType": "lnsMetric"
                     },
                     "description": "CPU utilization for this deployment.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL AND k8s.pod.cpu_limit_utilization IS NOT NULL\n| STATS utilization = AVG(k8s.pod.cpu_limit_utilization)\n| EVAL max_val = 1.0\n| KEEP utilization, max_val\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "hide_title": true
                 },
                 "gridData": {
                     "h": 5,
@@ -1131,19 +1010,7 @@
                         "visualizationType": "lnsMetric"
                     },
                     "description": "Memory utilization for this deployment.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL AND k8s.pod.memory_limit_utilization IS NOT NULL\n| STATS utilization = AVG(k8s.pod.memory_limit_utilization)\n| EVAL max_val = 1.0\n| KEEP utilization, max_val\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "hide_title": true
                 },
                 "gridData": {
                     "h": 5,
@@ -1261,9 +1128,11 @@
                                                     "color": {
                                                         "type": "loop"
                                                     },
-                                                    "rule": {
-                                                        "type": "other"
-                                                    },
+                                                    "rules": [
+                                                        {
+                                                            "type": "other"
+                                                        }
+                                                    ],
                                                     "touched": false
                                                 }
                                             ]
@@ -1284,22 +1153,9 @@
                         },
                         "title": "CPU usage over time",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false,
                     "title": "CPU usage over time"
                 },
                 "gridData": {
@@ -1416,9 +1272,11 @@
                                                     "color": {
                                                         "type": "loop"
                                                     },
-                                                    "rule": {
-                                                        "type": "other"
-                                                    },
+                                                    "rules": [
+                                                        {
+                                                            "type": "other"
+                                                        }
+                                                    ],
                                                     "touched": false
                                                 }
                                             ]
@@ -1439,22 +1297,9 @@
                         },
                         "title": "Memory working set over time",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false,
                     "title": "Memory working set over time"
                 },
                 "gridData": {
@@ -1613,19 +1458,7 @@
                         "visualizationType": "lnsMetric"
                     },
                     "description": "Volume utilization for this deployment.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "hidePanelTitles": true,
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL AND k8s.volume.available IS NOT NULL AND k8s.volume.capacity IS NOT NULL\n| STATS avail = SUM(k8s.volume.available), cap = SUM(k8s.volume.capacity)\n| EVAL utilization = 1.0 - TO_DOUBLE(avail) / TO_DOUBLE(cap), max_val = 1.0\n| KEEP utilization, max_val\n"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "hide_title": true
                 },
                 "gridData": {
                     "h": 5,
@@ -1741,9 +1574,11 @@
                                                     "color": {
                                                         "type": "loop"
                                                     },
-                                                    "rule": {
-                                                        "type": "other"
-                                                    },
+                                                    "rules": [
+                                                        {
+                                                            "type": "other"
+                                                        }
+                                                    ],
                                                     "touched": false
                                                 }
                                             ]
@@ -1764,22 +1599,9 @@
                         },
                         "title": "Volume usage over time",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false,
                     "title": "Volume usage over time"
                 },
                 "gridData": {
@@ -1855,21 +1677,9 @@
                         },
                         "title": "",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.cpu_limit IS NOT NULL\n| STATS total_limit = SUM(k8s.container.cpu_limit)\n| EVAL total_cores = ROUND(total_limit, 2)\n| KEEP total_cores"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    }
                 },
                 "gridData": {
                     "h": 5,
@@ -1944,21 +1754,9 @@
                         },
                         "title": "",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.container.memory_limit IS NOT NULL\n| STATS total_limit = SUM(k8s.container.memory_limit)\n| EVAL total_gb = ROUND(total_limit / 1073741824, 2)\n| KEEP total_gb"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    }
                 },
                 "gridData": {
                     "h": 5,
@@ -2033,21 +1831,9 @@
                         },
                         "title": "",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "esql": "FROM metrics-*\n| WHERE k8s.deployment.name IS NOT NULL\n  AND k8s.volume.capacity IS NOT NULL\n| STATS total_cap = SUM(k8s.volume.capacity)\n| EVAL total_gb = ROUND(total_cap / 1073741824, 2)\n| KEEP total_gb"
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    }
                 },
                 "gridData": {
                     "h": 5,
@@ -2184,11 +1970,9 @@
                         },
                         "title": "Pod count over time",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "syncCursor": true,
-                    "syncTooltips": false,
                     "title": "Pod count over time"
                 },
                 "gridData": {
@@ -2372,23 +2156,10 @@
                         },
                         "title": "Available vs desired replicas",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "description": "Available vs desired replicas over time. SUM per 1m bucket.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "description": "Available vs desired replicas over time. SUM per 1m bucket."
                 },
                 "gridData": {
                     "h": 12,
@@ -2574,7 +2345,9 @@
                                         "position": "top",
                                         "seriesType": "area",
                                         "showGridlines": false,
-                                        "splitAccessor": "a825c669-b2c8-fb25-7aac-5e326cad23ce",
+                                        "splitAccessors": [
+                                            "a825c669-b2c8-fb25-7aac-5e326cad23ce"
+                                        ],
                                         "xAccessor": "a01376ce-7bfd-f032-8917-96da6803fcc4"
                                     },
                                     {
@@ -2617,23 +2390,10 @@
                         },
                         "title": "CPU limit utilization by pod",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "description": "CPU limit utilization per pod. avg(k8s.pod.cpu_limit_utilization). Reference lines at 85% (throttle risk) and 100% (at limit).",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "description": "CPU limit utilization per pod. avg(k8s.pod.cpu_limit_utilization). Reference lines at 85% (throttle risk) and 100% (at limit)."
                 },
                 "gridData": {
                     "h": 12,
@@ -2830,7 +2590,9 @@
                                         "position": "top",
                                         "seriesType": "area_stacked",
                                         "showGridlines": false,
-                                        "splitAccessor": "a825c669-b2c8-fb25-7aac-5e326cad23ce",
+                                        "splitAccessors": [
+                                            "a825c669-b2c8-fb25-7aac-5e326cad23ce"
+                                        ],
                                         "xAccessor": "a01376ce-7bfd-f032-8917-96da6803fcc4"
                                     },
                                     {
@@ -2873,23 +2635,10 @@
                         },
                         "title": "Memory limit utilization by pod",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "description": "Memory limit utilization per pod. avg(k8s.pod.memory_limit_utilization). Reference lines at 85% (OOM warning) and 95% (OOM critical).",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "description": "Memory limit utilization per pod. avg(k8s.pod.memory_limit_utilization). Reference lines at 85% (OOM warning) and 95% (OOM critical)."
                 },
                 "gridData": {
                     "h": 12,
@@ -3039,7 +2788,9 @@
                                         "position": "top",
                                         "seriesType": "line",
                                         "showGridlines": false,
-                                        "splitAccessor": "a825c669-b2c8-fb25-7aac-5e326cad23ce",
+                                        "splitAccessors": [
+                                            "a825c669-b2c8-fb25-7aac-5e326cad23ce"
+                                        ],
                                         "xAccessor": "a01376ce-7bfd-f032-8917-96da6803fcc4"
                                     }
                                 ],
@@ -3053,23 +2804,10 @@
                         },
                         "title": "Container restarts by pod",
                         "type": "lens",
-                        "version": 1,
+                        "version": 2,
                         "visualizationType": "lnsXY"
                     },
-                    "description": "Container restarts over time per pod. max(k8s.container.restarts) broken down by k8s.pod.name.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    "description": "Container restarts over time per pod. max(k8s.container.restarts) broken down by k8s.pod.name."
                 },
                 "gridData": {
                     "h": 12,
@@ -3267,19 +3005,6 @@
                         "visualizationType": "lnsXY"
                     },
                     "description": "Network I/O over time by direction (transmit/receive). SUM(RATE(k8s.node.network.io)) per 1m bucket.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": []
-                        }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false,
                     "title": "Network I/O"
                 },
                 "gridData": {
@@ -3296,54 +3021,151 @@
             {
                 "embeddableConfig": {
                     "attributes": {
-                        "references": [
-                            {
-                                "id": "metrics-*",
-                                "name": "indexpattern-datasource-layer-3f4b5bff-6ec9-3e87-39f7-7b36e6ba8ac8",
-                                "type": "index-pattern"
-                            }
-                        ],
+                        "references": [],
                         "state": {
-                            "adHocDataViews": {},
+                            "adHocDataViews": {
+                                "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4": {
+                                    "allowHidden": false,
+                                    "allowNoIndex": false,
+                                    "fieldFormats": {},
+                                    "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
+                                    "managed": false,
+                                    "name": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "runtimeFieldMap": {},
+                                    "sourceFilters": [],
+                                    "timeFieldName": "@timestamp",
+                                    "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*",
+                                    "type": "esql"
+                                }
+                            },
                             "datasourceStates": {
-                                "formBased": {
-                                    "currentIndexPatternId": "metrics-*",
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
+                                            "timeField": "@timestamp",
+                                            "title": "metrics-kubeletstatsreceiver.otel-*,metrics-k8sclusterreceiver.otel-*"
+                                        }
+                                    ],
                                     "layers": {
-                                        "3f4b5bff-6ec9-3e87-39f7-7b36e6ba8ac8": {
-                                            "columnOrder": [
-                                                "pod",
-                                                "namespace",
-                                                "node",
-                                                "phase",
-                                                "cpu-usage",
-                                                "memory-ws",
-                                                "mem-limit-util",
-                                                "restarts"
-                                            ],
-                                            "columns": {
-                                                "cpu-usage": {
+                                        "c329de2e-8aea-4a95-ac22-b3fcc0140f02": {
+                                            "allColumns": [
+                                                {
+                                                    "columnId": "phase",
+                                                    "customLabel": false,
+                                                    "fieldName": "phase",
+                                                    "inMetricDimension": true,
+                                                    "label": "phase",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "cpu_usage",
+                                                    "customLabel": false,
+                                                    "fieldName": "cpu_usage",
+                                                    "inMetricDimension": true,
+                                                    "label": "cpu_usage",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "memory_ws",
+                                                    "customLabel": false,
+                                                    "fieldName": "memory_ws",
+                                                    "inMetricDimension": true,
+                                                    "label": "memory_ws",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "mem_limit_util",
+                                                    "customLabel": false,
+                                                    "fieldName": "mem_limit_util",
+                                                    "inMetricDimension": true,
+                                                    "label": "mem_limit_util",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "k8s.pod.name",
                                                     "customLabel": true,
-                                                    "dataType": "number",
-                                                    "isBucketed": false,
-                                                    "label": "CPU usage",
-                                                    "operationType": "average",
+                                                    "fieldName": "k8s.pod.name",
+                                                    "label": "Pod",
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "node",
+                                                    "customLabel": false,
+                                                    "fieldName": "node",
+                                                    "label": "node",
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "k8s.namespace.name",
+                                                    "customLabel": false,
+                                                    "fieldName": "k8s.namespace.name",
+                                                    "label": "k8s.namespace.name",
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "restarts",
+                                                    "customLabel": false,
+                                                    "fieldName": "restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "columns": [
+                                                {
+                                                    "columnId": "phase",
+                                                    "customLabel": true,
+                                                    "fieldName": "phase",
+                                                    "inMetricDimension": true,
+                                                    "label": "Phase",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    },
                                                     "params": {
                                                         "format": {
                                                             "id": "number",
                                                             "params": {
-                                                                "decimals": 4
+                                                                "decimals": 0
                                                             }
                                                         }
-                                                    },
-                                                    "scale": "ratio",
-                                                    "sourceField": "k8s.pod.cpu.usage"
+                                                    }
                                                 },
-                                                "mem-limit-util": {
+                                                {
+                                                    "columnId": "cpu_usage",
                                                     "customLabel": true,
-                                                    "dataType": "number",
-                                                    "isBucketed": false,
-                                                    "label": "Memory limit utilization",
-                                                    "operationType": "average",
+                                                    "fieldName": "cpu_usage",
+                                                    "inMetricDimension": true,
+                                                    "label": "CPU usage",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    },
                                                     "params": {
                                                         "format": {
                                                             "id": "percent",
@@ -3351,16 +3173,18 @@
                                                                 "decimals": 2
                                                             }
                                                         }
-                                                    },
-                                                    "scale": "ratio",
-                                                    "sourceField": "k8s.pod.memory_limit_utilization"
+                                                    }
                                                 },
-                                                "memory-ws": {
+                                                {
+                                                    "columnId": "memory_ws",
                                                     "customLabel": true,
-                                                    "dataType": "number",
-                                                    "isBucketed": false,
+                                                    "fieldName": "memory_ws",
+                                                    "inMetricDimension": true,
                                                     "label": "Memory working set",
-                                                    "operationType": "average",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    },
                                                     "params": {
                                                         "format": {
                                                             "id": "bytes",
@@ -3368,241 +3192,128 @@
                                                                 "decimals": 2
                                                             }
                                                         }
-                                                    },
-                                                    "scale": "ratio",
-                                                    "sourceField": "k8s.pod.memory.working_set"
+                                                    }
                                                 },
-                                                "namespace": {
+                                                {
+                                                    "columnId": "mem_limit_util",
                                                     "customLabel": true,
-                                                    "dataType": "string",
-                                                    "isBucketed": true,
-                                                    "label": "Namespace",
-                                                    "operationType": "terms",
+                                                    "fieldName": "mem_limit_util",
+                                                    "inMetricDimension": true,
+                                                    "label": "Memory limit utilization",
+                                                    "meta": {
+                                                        "esType": "double",
+                                                        "type": "number"
+                                                    },
                                                     "params": {
-                                                        "exclude": [],
-                                                        "excludeIsRegex": false,
-                                                        "include": [],
-                                                        "includeIsRegex": false,
-                                                        "missingBucket": false,
-                                                        "orderBy": {
-                                                            "columnId": "phase",
-                                                            "type": "column"
-                                                        },
-                                                        "orderDirection": "desc",
-                                                        "otherBucket": false,
-                                                        "parentFormat": {
-                                                            "id": "terms"
-                                                        },
-                                                        "size": 100
-                                                    },
-                                                    "scale": "ordinal",
-                                                    "sourceField": "k8s.namespace.name"
+                                                        "format": {
+                                                            "id": "percent",
+                                                            "params": {
+                                                                "decimals": 2
+                                                            }
+                                                        }
+                                                    }
                                                 },
-                                                "node": {
+                                                {
+                                                    "columnId": "k8s.pod.name",
                                                     "customLabel": true,
-                                                    "dataType": "string",
-                                                    "isBucketed": true,
-                                                    "label": "Node",
-                                                    "operationType": "terms",
-                                                    "params": {
-                                                        "exclude": [],
-                                                        "excludeIsRegex": false,
-                                                        "include": [],
-                                                        "includeIsRegex": false,
-                                                        "missingBucket": false,
-                                                        "orderBy": {
-                                                            "columnId": "phase",
-                                                            "type": "column"
-                                                        },
-                                                        "orderDirection": "desc",
-                                                        "otherBucket": false,
-                                                        "parentFormat": {
-                                                            "id": "terms"
-                                                        },
-                                                        "size": 100
-                                                    },
-                                                    "scale": "ordinal",
-                                                    "sourceField": "k8s.node.name"
-                                                },
-                                                "phase": {
-                                                    "customLabel": true,
-                                                    "dataType": "number",
-                                                    "isBucketed": false,
-                                                    "label": "Phase",
-                                                    "operationType": "max",
-                                                    "params": {
-                                                        "emptyAsNull": true
-                                                    },
-                                                    "scale": "ratio",
-                                                    "sourceField": "k8s.pod.phase"
-                                                },
-                                                "pod": {
-                                                    "customLabel": true,
-                                                    "dataType": "string",
-                                                    "isBucketed": true,
+                                                    "fieldName": "k8s.pod.name",
                                                     "label": "Pod",
-                                                    "operationType": "terms",
-                                                    "params": {
-                                                        "exclude": [],
-                                                        "excludeIsRegex": false,
-                                                        "include": [],
-                                                        "includeIsRegex": false,
-                                                        "missingBucket": false,
-                                                        "orderBy": {
-                                                            "columnId": "phase",
-                                                            "type": "column"
-                                                        },
-                                                        "orderDirection": "desc",
-                                                        "otherBucket": false,
-                                                        "parentFormat": {
-                                                            "id": "terms"
-                                                        },
-                                                        "size": 100
-                                                    },
-                                                    "scale": "ordinal",
-                                                    "sourceField": "k8s.pod.name"
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
                                                 },
-                                                "restarts": {
+                                                {
+                                                    "columnId": "k8s.namespace.name",
                                                     "customLabel": true,
-                                                    "dataType": "number",
-                                                    "isBucketed": false,
-                                                    "label": "Container restarts",
-                                                    "operationType": "max",
-                                                    "params": {
-                                                        "emptyAsNull": true
+                                                    "fieldName": "k8s.namespace.name",
+                                                    "label": "Namespace",
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "node",
+                                                    "customLabel": true,
+                                                    "fieldName": "node",
+                                                    "label": "Node",
+                                                    "meta": {
+                                                        "esType": "keyword",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                {
+                                                    "columnId": "restarts",
+                                                    "customLabel": true,
+                                                    "fieldName": "restarts",
+                                                    "inMetricDimension": true,
+                                                    "label": "Restarts",
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
                                                     },
-                                                    "scale": "ratio",
-                                                    "sourceField": "k8s.container.restarts"
+                                                    "params": {
+                                                        "format": {
+                                                            "id": "number",
+                                                            "params": {
+                                                                "decimals": 0
+                                                            }
+                                                        }
+                                                    }
                                                 }
+                                            ],
+                                            "index": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
+                                            "query": {
+                                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n  AND k8s.cluster.name IS NOT NULL\n| STATS\n    phase          = MAX(k8s.pod.phase),\n    cpu_usage      = AVG(k8s.pod.cpu.usage),\n    memory_ws      = AVG(k8s.pod.memory.working_set),\n    mem_limit_util = AVG(k8s.pod.memory_limit_utilization),\n    restarts       = MAX(k8s.container.restarts),\n    node           = MAX(k8s.node.name)\n  BY k8s.namespace.name, k8s.pod.name\n| EVAL\n    restarts = COALESCE(restarts, 0)\n| SORT restarts desc\n| LIMIT 100"
                                             },
-                                            "incompleteColumns": {},
-                                            "indexPatternId": "metrics-*",
-                                            "sampling": 1
+                                            "timeField": "@timestamp"
                                         }
                                     }
-                                },
-                                "indexpattern": {
-                                    "currentIndexPatternId": "metrics-*",
-                                    "layers": {}
-                                },
-                                "textBased": {
-                                    "indexPatternRefs": [
-                                        {
-                                            "id": "metrics-*",
-                                            "timeField": "@timestamp",
-                                            "title": "metrics-*"
-                                        }
-                                    ],
-                                    "layers": {}
                                 }
                             },
                             "filters": [],
-                            "internalReferences": [],
+                            "needsRefresh": false,
                             "query": {
-                                "language": "kuery",
-                                "query": ""
+                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n  AND k8s.cluster.name IS NOT NULL\n| STATS\n    phase          = MAX(k8s.pod.phase),\n    cpu_usage      = AVG(k8s.pod.cpu.usage),\n    memory_ws      = AVG(k8s.pod.memory.working_set),\n    mem_limit_util = AVG(k8s.pod.memory_limit_utilization),\n    restarts       = MAX(k8s.container.restarts),\n    node           = MAX(k8s.node.name)\n  BY k8s.namespace.name, k8s.pod.name\n| EVAL\n    restarts = COALESCE(restarts, 0)\n| SORT restarts desc\n| LIMIT 100"
                             },
                             "visualization": {
                                 "columns": [
                                     {
-                                        "columnId": "pod",
-                                        "isMetric": false,
-                                        "isTransposed": false,
-                                        "oneClickFilter": true
+                                        "columnId": "phase"
                                     },
                                     {
-                                        "columnId": "namespace",
-                                        "isMetric": false,
-                                        "isTransposed": false,
-                                        "oneClickFilter": true
+                                        "columnId": "cpu_usage"
+                                    },
+                                    {
+                                        "columnId": "memory_ws"
+                                    },
+                                    {
+                                        "columnId": "mem_limit_util"
                                     },
                                     {
                                         "columnId": "node",
-                                        "isMetric": false,
-                                        "isTransposed": false,
                                         "oneClickFilter": true
                                     },
                                     {
-                                        "colorMode": "cell",
-                                        "columnId": "phase",
-                                        "isMetric": true,
-                                        "isTransposed": false,
-                                        "palette": {
-                                            "name": "custom",
-                                            "params": {
-                                                "colorStops": [
-                                                    {
-                                                        "color": "#EAAE01",
-                                                        "stop": 1
-                                                    },
-                                                    {
-                                                        "color": "#24C292",
-                                                        "stop": 2
-                                                    },
-                                                    {
-                                                        "color": "#61A2FF",
-                                                        "stop": 3
-                                                    },
-                                                    {
-                                                        "color": "#F6726A",
-                                                        "stop": 4
-                                                    },
-                                                    {
-                                                        "color": "#BFDBFF",
-                                                        "stop": 5
-                                                    }
-                                                ],
-                                                "continuity": "above",
-                                                "name": "custom",
-                                                "rangeMax": null,
-                                                "rangeMin": 1,
-                                                "rangeType": "number",
-                                                "steps": 5,
-                                                "stops": [
-                                                    {
-                                                        "color": "#EAAE01",
-                                                        "stop": 2
-                                                    },
-                                                    {
-                                                        "color": "#24C292",
-                                                        "stop": 3
-                                                    },
-                                                    {
-                                                        "color": "#61A2FF",
-                                                        "stop": 4
-                                                    },
-                                                    {
-                                                        "color": "#F6726A",
-                                                        "stop": 5
-                                                    },
-                                                    {
-                                                        "color": "#BFDBFF",
-                                                        "stop": 6
-                                                    }
-                                                ]
-                                            },
-                                            "type": "palette"
-                                        }
+                                        "columnId": "k8s.namespace.name",
+                                        "oneClickFilter": true
                                     },
                                     {
-                                        "columnId": "cpu-usage",
-                                        "isMetric": true,
-                                        "isTransposed": false
-                                    },
-                                    {
-                                        "columnId": "memory-ws",
-                                        "isMetric": true,
-                                        "isTransposed": false
+                                        "columnId": "k8s.pod.name",
+                                        "oneClickFilter": true
                                     },
                                     {
                                         "colorMode": "cell",
                                         "columnId": "restarts",
-                                        "isMetric": true,
-                                        "isTransposed": false,
                                         "palette": {
                                             "name": "custom",
                                             "params": {
                                                 "colorStops": [
+                                                    {
+                                                        "color": "#24c292",
+                                                        "stop": 0
+                                                    },
                                                     {
                                                         "color": "#F6726A",
                                                         "stop": 1
@@ -3610,114 +3321,83 @@
                                                 ],
                                                 "continuity": "above",
                                                 "name": "custom",
+                                                "progression": "fixed",
                                                 "rangeMax": null,
-                                                "rangeMin": 1,
+                                                "rangeMin": 0,
                                                 "rangeType": "number",
+                                                "reverse": false,
                                                 "steps": 5,
                                                 "stops": [
                                                     {
+                                                        "color": "#24c292",
+                                                        "stop": 1
+                                                    },
+                                                    {
                                                         "color": "#F6726A",
-                                                        "stop": 1098
+                                                        "stop": 1289
                                                     }
                                                 ]
                                             },
                                             "type": "palette"
                                         }
-                                    },
-                                    {
-                                        "columnId": "mem-limit-util",
-                                        "isMetric": true,
-                                        "isTransposed": false
                                     }
                                 ],
-                                "layerId": "3f4b5bff-6ec9-3e87-39f7-7b36e6ba8ac8",
+                                "layerId": "c329de2e-8aea-4a95-ac22-b3fcc0140f02",
                                 "layerType": "data",
-                                "sorting": {
-                                    "columnId": "cpu-usage",
-                                    "direction": "desc"
-                                }
+                                "showRowNumbers": true
                             }
                         },
-                        "title": "Pods",
-                        "type": "lens",
-                        "version": 1,
+                        "title": "",
+                        "version": 2,
                         "visualizationType": "lnsDatatable"
                     },
                     "description": "Pods in this deployment with phase, CPU, memory, restarts, and memory limit utilization. Drills down to Pod Detail.",
-                    "enhancements": {
-                        "dynamicActions": {
-                            "events": [
-                                {
-                                    "action": {
-                                        "config": {
-                                            "dashboardId": "2a4e0bbf-43c9-4a02-b97d-87a4d05270fd",
-                                            "useCurrentDateRange": true,
-                                            "useCurrentFilters": true
-                                        },
-                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
-                                        "name": "1. View pod details"
-                                    },
-                                    "eventId": "e29eeaad-92ec-9421-dfcf-de0eb12efaef",
-                                    "triggers": [
-                                        "VALUE_CLICK_TRIGGER"
-                                    ]
-                                },
-                                {
-                                    "action": {
-                                        "config": {
-                                            "dashboardId": "286af595-d3df-4b11-a127-bb096d86db62",
-                                            "openInNewTab": false,
-                                            "useCurrentDateRange": true,
-                                            "useCurrentFilters": true
-                                        },
-                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
-                                        "name": "2. View namespace details"
-                                    },
-                                    "eventId": "6fa13148-86e0-4c2b-b065-d4c800dbdd09",
-                                    "triggers": [
-                                        "VALUE_CLICK_TRIGGER"
-                                    ]
-                                },
-                                {
-                                    "action": {
-                                        "config": {
-                                            "dashboardId": "8c71876b-ee61-4bdf-b3a4-1abc848d9c33",
-                                            "openInNewTab": false,
-                                            "useCurrentDateRange": true,
-                                            "useCurrentFilters": true
-                                        },
-                                        "factoryId": "DASHBOARD_TO_DASHBOARD_DRILLDOWN",
-                                        "name": "3. View node details"
-                                    },
-                                    "eventId": "cabadaa7-3a72-4d73-ba21-2359b583fdf2",
-                                    "triggers": [
-                                        "VALUE_CLICK_TRIGGER"
-                                    ]
-                                }
-                            ]
+                    "drilldowns": [
+                        {
+                            "dashboardRefName": "dashboard_drilldown_kubernetes_otel-2a4e0bbf-43c9-4a02-b97d-87a4d05270fd",
+                            "label": "1. View pod details",
+                            "open_in_new_tab": false,
+                            "trigger": "on_apply_filter",
+                            "type": "dashboard_drilldown",
+                            "use_filters": true,
+                            "use_time_range": true
+                        },
+                        {
+                            "dashboardRefName": "dashboard_drilldown_kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
+                            "label": "2. View namespace details",
+                            "open_in_new_tab": false,
+                            "trigger": "on_apply_filter",
+                            "type": "dashboard_drilldown",
+                            "use_filters": true,
+                            "use_time_range": true
+                        },
+                        {
+                            "dashboardRefName": "dashboard_drilldown_kubernetes_otel-8c71876b-ee61-4bdf-b3a4-1abc848d9c33",
+                            "label": "3. View node details",
+                            "open_in_new_tab": false,
+                            "trigger": "on_apply_filter",
+                            "type": "dashboard_drilldown",
+                            "use_filters": true,
+                            "use_time_range": true
                         }
-                    },
-                    "filters": [],
-                    "query": {
-                        "language": "kuery",
-                        "query": ""
-                    },
-                    "syncColors": false,
-                    "syncCursor": true,
-                    "syncTooltips": false
+                    ],
+                    "title": "Pods"
                 },
                 "gridData": {
-                    "h": 10,
-                    "i": "v2-deploy-detail-pods-table",
+                    "h": 13,
+                    "i": "d4f41df0-258f-4758-96a0-69a880eeedef",
                     "sectionId": "61a3d034-f398-4c63-8dc4-e194c1804df8",
                     "w": 48,
                     "x": 0,
                     "y": 0
                 },
-                "panelIndex": "v2-deploy-detail-pods-table",
+                "panelIndex": "d4f41df0-258f-4758-96a0-69a880eeedef",
                 "type": "lens"
             }
         ],
+        "pinned_panels": {
+            "panels": {}
+        },
         "sections": [
             {
                 "collapsed": false,
@@ -3750,12 +3430,12 @@
         "title": "[PROD][OTEL][Kubernetes] Deployment Detail"
     },
     "coreMigrationVersion": "8.8.0",
-    "created_at": "2026-03-19T14:49:20.824Z",
+    "created_at": "2026-03-26T02:27:57.321Z",
     "id": "kubernetes_otel-8cf34def-60de-4bf3-9b06-d4ffc6cb4236",
     "references": [
         {
             "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
-            "name": "v3-deployment-back-link:link_06168fab-bbb4-4943-a558-b4ce7f3ab305_dashboard",
+            "name": "v3-deployment-back-link:link_15edc67e-f4d5-40fa-a88f-123d9acb6911_dashboard",
             "type": "dashboard"
         },
         {
@@ -3789,23 +3469,18 @@
             "type": "index-pattern"
         },
         {
-            "id": "metrics-*",
-            "name": "v2-deploy-detail-pods-table:indexpattern-datasource-layer-3f4b5bff-6ec9-3e87-39f7-7b36e6ba8ac8",
-            "type": "index-pattern"
-        },
-        {
             "id": "kubernetes_otel-2a4e0bbf-43c9-4a02-b97d-87a4d05270fd",
-            "name": "v2-deploy-detail-pods-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:e29eeaad-92ec-9421-dfcf-de0eb12efaef:dashboardId",
+            "name": "d4f41df0-258f-4758-96a0-69a880eeedef:dashboard_drilldown_kubernetes_otel-2a4e0bbf-43c9-4a02-b97d-87a4d05270fd",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
-            "name": "v2-deploy-detail-pods-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:6fa13148-86e0-4c2b-b065-d4c800dbdd09:dashboardId",
+            "name": "d4f41df0-258f-4758-96a0-69a880eeedef:dashboard_drilldown_kubernetes_otel-286af595-d3df-4b11-a127-bb096d86db62",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-8c71876b-ee61-4bdf-b3a4-1abc848d9c33",
-            "name": "v2-deploy-detail-pods-table:drilldown:DASHBOARD_TO_DASHBOARD_DRILLDOWN:cabadaa7-3a72-4d73-ba21-2359b583fdf2:dashboardId",
+            "name": "d4f41df0-258f-4758-96a0-69a880eeedef:dashboard_drilldown_kubernetes_otel-8c71876b-ee61-4bdf-b3a4-1abc848d9c33",
             "type": "dashboard"
         },
         {
@@ -3815,5 +3490,6 @@
         }
     ],
     "type": "dashboard",
-    "typeMigrationVersion": "10.3.0"
+    "typeMigrationVersion": "10.3.0",
+    "updated_by": "u_mGBROF_q5bmFCATbLXAcCwKa0k8JvONAwSruelyKA5E_0"
 }
