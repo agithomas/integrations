@@ -1,9 +1,4 @@
 # newer versions go on top
-- version: 1.6.0
-  changes:
-    - description: "Convert formBased Lens panels to ES|QL and fix single-metric aggregation accuracy in the Pod details dashboard"
-      type: enhancement
-      link: https://github.com/elastic/integrations/pull/18116
 - version: 1.5.0
   changes:
     - description: Lens to ESQL conversion for the Cluster dashboard. Fix issues with the dashboard.
