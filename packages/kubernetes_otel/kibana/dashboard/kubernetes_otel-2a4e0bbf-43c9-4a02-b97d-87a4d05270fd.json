@@ -3,6 +3,38 @@
         "description": "Single-pod deep dive with memory decomposition, OOM risk thresholds, per-container resource breakdown, and network I/O.",
         "kibanaSavedObjectMeta": {
             "searchSourceJSON": {
+                "filter": [
+                    {
+                        "meta": {
+                            "disabled": false,
+                            "field": "data_stream.dataset",
+                            "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                            "key": "data_stream.dataset",
+                            "params": [
+                                "kubeletstatsreceiver.otel",
+                                "k8sclusterreceiver.otel"
+                            ],
+                            "type": "phrases"
+                        },
+                        "query": {
+                            "bool": {
+                                "minimum_should_match": 1,
+                                "should": [
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "kubeletstatsreceiver.otel"
+                                        }
+                                    },
+                                    {
+                                        "match_phrase": {
+                                            "data_stream.dataset": "k8sclusterreceiver.otel"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
                 "query": {
                     "language": "kuery",
                     "query": "data_stream.dataset : \"kubeletstatsreceiver.otel\" or data_stream.dataset : \"kubeletstatsreceiver.otel\"  or data_stream.dataset : \"k8sclusterreceiver.otel\" "
@@ -26,7 +58,7 @@
                     "layout": "horizontal",
                     "links": [
                         {
-                            "destinationRefName": "link_0376fc68-cb2b-45ba-9c16-dae3dfca45d8_dashboard",
+                            "destinationRefName": "link_4bc863fc-7a63-452c-bf62-e1de6ca37762_dashboard",
                             "label": "\u003c Overview",
                             "options": {
                                 "open_in_new_tab": false,
@@ -1186,8 +1218,7 @@
                         "title": "",
                         "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "drilldowns": []
+                    }
                 },
                 "gridData": {
                     "h": 5,
@@ -1578,7 +1609,6 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "drilldowns": [],
                     "hide_title": true,
                     "title": "Volume utilization"
                 },
@@ -1670,7 +1700,6 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "drilldowns": [],
                     "title": ""
                 },
                 "gridData": {
@@ -1761,7 +1790,6 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "drilldowns": [],
                     "title": ""
                 },
                 "gridData": {
@@ -2811,18 +2839,18 @@
                 "title": "Containers in pod"
             }
         ],
-        "timeFrom": "now-1h",
+        "timeFrom": "2026-03-29T19:02:29.637Z",
         "timeRestore": true,
-        "timeTo": "now",
+        "timeTo": "2026-03-30T10:32:20.440Z",
         "title": "[PROD][OTEL][Kubernetes] Pod Detail"
     },
     "coreMigrationVersion": "8.8.0",
-    "created_at": "2026-03-26T15:06:01.860Z",
+    "created_at": "2026-03-30T11:32:47.502Z",
     "id": "kubernetes_otel-2a4e0bbf-43c9-4a02-b97d-87a4d05270fd",
     "references": [
         {
             "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
-            "name": "v3-pod-back-link:link_0376fc68-cb2b-45ba-9c16-dae3dfca45d8_dashboard",
+            "name": "v3-pod-back-link:link_4bc863fc-7a63-452c-bf62-e1de6ca37762_dashboard",
             "type": "dashboard"
         },
         {
@@ -2834,6 +2862,11 @@
             "id": "kubernetes_otel-7b103a47-6eda-47e5-a949-9855bd58aa13",
             "name": "7dad193d-fd5e-416d-8e59-63301bc8f9da:dashboard_drilldown_kubernetes_otel-7b103a47-6eda-47e5-a949-9855bd58aa13",
             "type": "dashboard"
+        },
+        {
+            "id": "metrics-*",
+            "name": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+            "type": "index-pattern"
         }
     ],
     "type": "dashboard",
