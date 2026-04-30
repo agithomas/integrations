@@ -59,37 +59,37 @@
                     "layout": "horizontal",
                     "links": [
                         {
-                            "destinationRefName": "link_9cb93eb8-1cbd-45b0-abed-81f2d39be12e_dashboard",
+                            "destinationRefName": "link_d6f374ec-b6bc-4e72-ac41-ac1c7b010ff3_dashboard",
                             "label": "Overview",
                             "options": {},
                             "type": "dashboardLink"
                         },
                         {
-                            "destinationRefName": "link_4a291441-67be-4294-8d51-c6ead68cc34f_dashboard",
+                            "destinationRefName": "link_8220bcd9-d1e9-4eef-9630-d1e0e39b3ecf_dashboard",
                             "label": "Clusters",
                             "options": {},
                             "type": "dashboardLink"
                         },
                         {
-                            "destinationRefName": "link_3bf2331e-af35-4f14-9502-bd53c97126e3_dashboard",
+                            "destinationRefName": "link_430960d7-9a6f-4e22-8205-91e9790b9743_dashboard",
                             "label": "Nodes",
                             "options": {},
                             "type": "dashboardLink"
                         },
                         {
-                            "destinationRefName": "link_99e7d263-4651-4fdd-8223-ba9c8aaeff65_dashboard",
+                            "destinationRefName": "link_7411c5c2-4b46-4dd8-9e4a-b75bbbccd879_dashboard",
                             "label": "Namespaces",
                             "options": {},
                             "type": "dashboardLink"
                         },
                         {
-                            "destinationRefName": "link_1920018b-8fcb-4bd9-b7a7-f2e84c663bac_dashboard",
+                            "destinationRefName": "link_a10b1fac-9b66-4151-8d2f-cc09b0880a37_dashboard",
                             "label": "Workload resources",
                             "options": {},
                             "type": "dashboardLink"
                         },
                         {
-                            "destinationRefName": "link_56f6642e-c5a3-44e4-9cd5-911974fec39a_dashboard",
+                            "destinationRefName": "link_926ecc46-ffd2-4dda-a358-7bd122d6524b_dashboard",
                             "label": "Pods",
                             "options": {},
                             "type": "dashboardLink"
@@ -444,7 +444,7 @@
                                             ],
                                             "index": "940e9622ed5a553d64d70de28a6d22ade679d741e867ed5246ccd555c690adf4",
                                             "query": {
-                                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n| STATS\n    cpu_usage        =  LAST(k8s.pod.cpu.usage, @timestamp),\n    memory_ws        = LAST(k8s.pod.memory.working_set, @timestamp),\n    phase_num        = LAST(k8s.pod.phase, CASE(k8s.pod.phase IS NOT NULL, @timestamp, NULL)),\n    restarts         = MAX(k8s.container.restarts),\n    k8s.node.name    = MV_FIRST(VALUES(k8s.node.name)),\n    k8s.cluster.name = MV_FIRST(VALUES(k8s.cluster.name)),\n    mem_limit        = MAX(k8s.container.memory_limit),\n    last_seen        = MAX(@timestamp)\n  BY k8s.namespace.name, k8s.pod.name\n| INLINE STATS latest_ts = MAX(last_seen)\n| WHERE DATE_DIFF(\"minute\", last_seen, latest_ts) \u003c= 5\n| EVAL\n    phase = CASE(\n      phase_num == 1, \"Pending\",\n      phase_num == 2, \"Running\",\n      phase_num == 3, \"Succeeded\",\n      phase_num == 4, \"Failed\",\n      \"Unknown\"),\n    restarts = COALESCE(restarts, 0),\n    mem_limit_util = CASE(\n      mem_limit IS NOT NULL AND mem_limit \u003e 0,\n        ROUND(TO_DOUBLE(memory_ws) / TO_DOUBLE(mem_limit), 4),\n      NULL)\n| KEEP k8s.cluster.name, k8s.namespace.name, k8s.pod.name, phase, cpu_usage, memory_ws, mem_limit_util, restarts, k8s.node.name\n| SORT cpu_usage DESC NULLS LAST, k8s.pod.name ASC\n| LIMIT 100"
+                                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n  AND @timestamp \u003e ?_tend - 5 minutes\n| STATS\n    cpu_usage        = MAX(k8s.pod.cpu.usage),\n    memory_ws        = MAX(k8s.pod.memory.working_set),\n    phase_num        = LAST(k8s.pod.phase, CASE(k8s.pod.phase IS NOT NULL, @timestamp, NULL)),\n    restarts         = MAX(k8s.container.restarts),\n    k8s.node.name    = MV_FIRST(VALUES(k8s.node.name)),\n    k8s.cluster.name = MV_FIRST(VALUES(k8s.cluster.name)),\n    mem_limit        = MAX(k8s.container.memory_limit),\n    last_seen        = MAX(@timestamp)\n  BY k8s.namespace.name, k8s.pod.name\n| INLINE STATS latest_ts = MAX(last_seen)\n| WHERE DATE_DIFF(\"minute\", last_seen, latest_ts) \u003c= 5\n| EVAL\n    phase = CASE(\n      phase_num == 1, \"Pending\",\n      phase_num == 2, \"Running\",\n      phase_num == 3, \"Succeeded\",\n      phase_num == 4, \"Failed\",\n      \"Unknown\"),\n    restarts = COALESCE(restarts, 0),\n    mem_limit_util = CASE(\n      mem_limit IS NOT NULL AND mem_limit \u003e 0,\n        ROUND(TO_DOUBLE(memory_ws) / TO_DOUBLE(mem_limit), 4),\n      NULL)\n| KEEP k8s.cluster.name, k8s.namespace.name, k8s.pod.name, phase, cpu_usage, memory_ws, mem_limit_util, restarts, k8s.node.name\n| SORT cpu_usage DESC NULLS LAST, k8s.pod.name ASC\n| LIMIT 100"
                                             },
                                             "timeField": "@timestamp"
                                         }
@@ -454,7 +454,7 @@
                             "filters": [],
                             "needsRefresh": false,
                             "query": {
-                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n| STATS\n    cpu_usage        =  LAST(k8s.pod.cpu.usage, @timestamp),\n    memory_ws        = LAST(k8s.pod.memory.working_set, @timestamp),\n    phase_num        = LAST(k8s.pod.phase, CASE(k8s.pod.phase IS NOT NULL, @timestamp, NULL)),\n    restarts         = MAX(k8s.container.restarts),\n    k8s.node.name    = MV_FIRST(VALUES(k8s.node.name)),\n    k8s.cluster.name = MV_FIRST(VALUES(k8s.cluster.name)),\n    mem_limit        = MAX(k8s.container.memory_limit),\n    last_seen        = MAX(@timestamp)\n  BY k8s.namespace.name, k8s.pod.name\n| INLINE STATS latest_ts = MAX(last_seen)\n| WHERE DATE_DIFF(\"minute\", last_seen, latest_ts) \u003c= 5\n| EVAL\n    phase = CASE(\n      phase_num == 1, \"Pending\",\n      phase_num == 2, \"Running\",\n      phase_num == 3, \"Succeeded\",\n      phase_num == 4, \"Failed\",\n      \"Unknown\"),\n    restarts = COALESCE(restarts, 0),\n    mem_limit_util = CASE(\n      mem_limit IS NOT NULL AND mem_limit \u003e 0,\n        ROUND(TO_DOUBLE(memory_ws) / TO_DOUBLE(mem_limit), 4),\n      NULL)\n| KEEP k8s.cluster.name, k8s.namespace.name, k8s.pod.name, phase, cpu_usage, memory_ws, mem_limit_util, restarts, k8s.node.name\n| SORT cpu_usage DESC NULLS LAST, k8s.pod.name ASC\n| LIMIT 100"
+                                "esql": "FROM metrics-kubeletstatsreceiver.otel-*, metrics-k8sclusterreceiver.otel-*\n| WHERE k8s.pod.name IS NOT NULL\n  AND @timestamp \u003e ?_tend - 5 minutes\n| STATS\n    cpu_usage        = MAX(k8s.pod.cpu.usage),\n    memory_ws        = MAX(k8s.pod.memory.working_set),\n    phase_num        = LAST(k8s.pod.phase, CASE(k8s.pod.phase IS NOT NULL, @timestamp, NULL)),\n    restarts         = MAX(k8s.container.restarts),\n    k8s.node.name    = MV_FIRST(VALUES(k8s.node.name)),\n    k8s.cluster.name = MV_FIRST(VALUES(k8s.cluster.name)),\n    mem_limit        = MAX(k8s.container.memory_limit),\n    last_seen        = MAX(@timestamp)\n  BY k8s.namespace.name, k8s.pod.name\n| INLINE STATS latest_ts = MAX(last_seen)\n| WHERE DATE_DIFF(\"minute\", last_seen, latest_ts) \u003c= 5\n| EVAL\n    phase = CASE(\n      phase_num == 1, \"Pending\",\n      phase_num == 2, \"Running\",\n      phase_num == 3, \"Succeeded\",\n      phase_num == 4, \"Failed\",\n      \"Unknown\"),\n    restarts = COALESCE(restarts, 0),\n    mem_limit_util = CASE(\n      mem_limit IS NOT NULL AND mem_limit \u003e 0,\n        ROUND(TO_DOUBLE(memory_ws) / TO_DOUBLE(mem_limit), 4),\n      NULL)\n| KEEP k8s.cluster.name, k8s.namespace.name, k8s.pod.name, phase, cpu_usage, memory_ws, mem_limit_util, restarts, k8s.node.name\n| SORT cpu_usage DESC NULLS LAST, k8s.pod.name ASC\n| LIMIT 100"
                             },
                             "visualization": {
                                 "columns": [
@@ -943,8 +943,7 @@
                         "title": "",
                         "version": 2,
                         "visualizationType": "lnsMetric"
-                    },
-                    "drilldowns": []
+                    }
                 },
                 "gridData": {
                     "h": 4,
@@ -1063,8 +1062,7 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "description": "Running pods (phase=2). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 2.",
-                    "drilldowns": []
+                    "description": "Running pods (phase=2). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 2."
                 },
                 "gridData": {
                     "h": 4,
@@ -1183,8 +1181,7 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "description": "Pending pods (phase=1). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 1.",
-                    "drilldowns": []
+                    "description": "Pending pods (phase=1). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 1."
                 },
                 "gridData": {
                     "h": 4,
@@ -1303,8 +1300,7 @@
                         "version": 2,
                         "visualizationType": "lnsMetric"
                     },
-                    "description": "Failed pods (phase=4). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 4.",
-                    "drilldowns": []
+                    "description": "Failed pods (phase=4). COUNT_DISTINCT(k8s.pod.uid) WHERE k8s.pod.phase == 4."
                 },
                 "gridData": {
                     "h": 4,
@@ -1823,43 +1819,43 @@
                 "title": "Pods metrics"
             }
         ],
-        "timeFrom": "now-30m",
+        "timeFrom": "now-24h/h",
         "timeRestore": true,
         "timeTo": "now",
         "title": "[OTEL][Kubernetes] Pods"
     },
     "coreMigrationVersion": "8.8.0",
-    "created_at": "2026-04-29T07:01:10.181Z",
+    "created_at": "2026-04-30T04:47:20.996Z",
     "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
     "references": [
         {
             "id": "kubernetes_otel-7b1ac87f-60ea-477f-b506-8a248026afbb",
-            "name": "v2-pods-alt-nav:link_9cb93eb8-1cbd-45b0-abed-81f2d39be12e_dashboard",
+            "name": "v2-pods-alt-nav:link_d6f374ec-b6bc-4e72-ac41-ac1c7b010ff3_dashboard",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-fe68e0e9-0506-4ad7-96be-070cf7592a7e",
-            "name": "v2-pods-alt-nav:link_4a291441-67be-4294-8d51-c6ead68cc34f_dashboard",
+            "name": "v2-pods-alt-nav:link_8220bcd9-d1e9-4eef-9630-d1e0e39b3ecf_dashboard",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-0c88decf-de83-47a4-a5df-0a79dc8daff5",
-            "name": "v2-pods-alt-nav:link_3bf2331e-af35-4f14-9502-bd53c97126e3_dashboard",
+            "name": "v2-pods-alt-nav:link_430960d7-9a6f-4e22-8205-91e9790b9743_dashboard",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-c0765efe-f172-42c4-a2ea-f4552b6f42dc",
-            "name": "v2-pods-alt-nav:link_99e7d263-4651-4fdd-8223-ba9c8aaeff65_dashboard",
+            "name": "v2-pods-alt-nav:link_7411c5c2-4b46-4dd8-9e4a-b75bbbccd879_dashboard",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-0b70c6de-4d53-47c4-9844-5f964ba04a6f",
-            "name": "v2-pods-alt-nav:link_1920018b-8fcb-4bd9-b7a7-f2e84c663bac_dashboard",
+            "name": "v2-pods-alt-nav:link_a10b1fac-9b66-4151-8d2f-cc09b0880a37_dashboard",
             "type": "dashboard"
         },
         {
             "id": "kubernetes_otel-aa37d8f8-56ca-4452-96ad-456b5154e23d",
-            "name": "v2-pods-alt-nav:link_56f6642e-c5a3-44e4-9cd5-911974fec39a_dashboard",
+            "name": "v2-pods-alt-nav:link_926ecc46-ffd2-4dda-a358-7bd122d6524b_dashboard",
             "type": "dashboard"
         },
         {
