@@ -1,6 +1,6 @@
 {
     "attributes": {
-        "description": "Per-instance detail view for an RDS database (OTel schema). Reached via the 'View instance details' drilldown on [AWS OTel] RDS (NICO-NEW-OVERVIEW). All panels filter on the inbound DBInstanceIdentifier KQL filter.",
+        "description": "Per-instance detail view for an RDS database (OTel schema).",
         "kibanaSavedObjectMeta": {
             "searchSourceJSON": {
                 "query": {
